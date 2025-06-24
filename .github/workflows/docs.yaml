@@ -12,7 +12,8 @@ on:
   workflow_dispatch:
 
 jobs:
-  docs:
+  build-docs:
+    name: Build Docs
     runs-on: ubuntu-latest
 
     steps:
