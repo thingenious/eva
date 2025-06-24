@@ -11,6 +11,11 @@ on:
   merge_group:
   workflow_dispatch:
 
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
 jobs:
   build-docs:
     name: Build Docs
