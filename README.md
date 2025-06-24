@@ -1,5 +1,7 @@
 # EVE WebSocket Chat API Documentation
 
+[![Coverage Status](https://coveralls.io/repos/github/thingenious/eve/badge.svg)](https://coveralls.io/github/thingenious/eve)
+
 ## Overview
 
 EVE is a real-time chat API service built with WebSocket technology, featuring conversation history, intelligent summarization, and Retrieval-Augmented Generation (RAG) capabilities. The service provides structured responses with emotional context for enhanced conversational experiences.
