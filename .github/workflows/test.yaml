@@ -57,3 +57,10 @@ jobs:
             --cov-report=html:coverage/html \
             --cov-report=xml:coverage/coverage.xml \
             --junitxml=coverage/xunit.xml tests
+
+      - name: Report to Coveralls
+        uses: coverallsapp/github-action@v2
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path-to-lcov: ./coverage/lcov.info
+          fail-on-error: false
