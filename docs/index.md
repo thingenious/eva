@@ -105,10 +105,6 @@ Every conversation is preserved with intelligent summarization, so context is ma
 - **Need technical details?** Check the [API Reference](api-reference.md)
 - **Want to see code?** Browse the [Client Examples](client-examples.md)
 
-## 📞 Support
-
-Need help? Check our troubleshooting guide in the API Reference or contact support for assistance with your EVE implementation.
-
 ---
 
 *Ready to build amazing conversational experiences with EVE? Let's get started!*
