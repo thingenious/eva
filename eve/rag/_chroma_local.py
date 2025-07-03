@@ -5,7 +5,6 @@
 
 # pylint: disable=too-many-try-statements,broad-exception-caught,duplicate-code
 import asyncio
-import os
 import uuid as uuid_lib
 from pathlib import Path
 from typing import Any, Optional
@@ -178,7 +177,6 @@ class ChromaLocalRAGManager(BaseRAGManager):
             )
 
         path = Path(documents_path)
-        print(path, os.listdir(path))
         files = self._get_supported_files(path)
 
         documents: list[str] = []

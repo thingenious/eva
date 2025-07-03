@@ -3,7 +3,9 @@ site_name: EVE WebSocket Chat API
 # yamllint disable rule:line-length
 site_description: Real-time chat API service with WebSockets, conversation history, and RAG capabilities
 site_author: EVE API Team
-site_url: https://your-domain.com/docs
+site_url: https://thingenious.github.io/eve/
+repo_name: thingenious/eve
+repo_url: https://github.com/thingenious/eve
 
 theme:
   name: material

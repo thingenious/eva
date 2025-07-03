@@ -569,11 +569,11 @@ Both tools support WebSocket testing with:
 
 ```shell
 # Clone repository
-git clone https://github.com/your-org/eve-chat-api
-cd eve-chat-api
+git clone https://github.com/thingenious/eve.git
+cd eve
 
 # Install dependencies
-pip install -r requirements.txt
+pip install -r requirements/all.txt
 
 # Set environment variables
 export CHAT_API_KEY=dev-test-key-12345
@@ -582,7 +582,9 @@ export RAG_DOCS_FOLDER=./test_documents
 export DATABASE_URL=sqlite:///dev_eve.db
 
 # Run development server
-python -m uvicorn main:app --reload --host 0.0.0.0 --port 8000
+python -m eve.main --host 0.0.0.0 --port 8000
+# or:
+python -m uvicorn eve.main:app --reload --host 0.0.0.0 --port 8000
 ```
 
 #### Test Documents
@@ -716,32 +718,6 @@ ws.onmessage = function(event) {
 - Use geographically closer servers
 - Optimize document indexing
 - Consider conversation summarization frequency
-
-### Debug Mode
-
-Enable detailed logging for troubleshooting:
-
-```bash
-# Server-side debug logging
-LOG_LEVEL=debug python -m uvicorn main:app --reload
-
-# Client-side debug logging
-const debug = true;
-
-ws.onmessage = function(event) {
-    if (debug) {
-        console.log('Received:', event.data);
-    }
-    // Process message...
-};
-
-ws.send = function(data) {
-    if (debug) {
-        console.log('Sending:', data);
-    }
-    WebSocket.prototype.send.call(this, data);
-};
-```
 
 ## API Changelog
 
