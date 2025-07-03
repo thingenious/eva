@@ -7,6 +7,7 @@
 # pylint: disable=missing-function-docstring,import-outside-toplevel
 # pyright: reportUnknownArgumentType=false,reportUnknownLambdaType=false
 # pyright: reportUnknownVariableType=false
+import os
 from pathlib import Path
 
 import pytest
@@ -39,23 +40,24 @@ def chroma_manager_fixture(
     )
 
     manager = ChromaLocalRAGManager(
-        persist_directory=str(tmp_path / "chroma_db")
+        persist_directory=str(tmp_path / "chroma_db"),
+        documents_root=str(tmp_path / "documents"),
     )
+    os.makedirs(manager.documents_root, exist_ok=True)
     return manager
 
 
 @pytest.mark.asyncio
 async def test_end_to_end_index_and_search(
-    tmp_path: Path, chroma_manager: ChromaLocalRAGManager
+    chroma_manager: ChromaLocalRAGManager,
 ) -> None:
     """Test end-to-end indexing and searching functionality."""
     # 1. Create a sample file to index
-    file = tmp_path / "note.txt"
+    file = Path(chroma_manager.documents_root) / "file.txt"
     file.write_text("Cats are beautiful animals. Dogs are loyal companions.")
 
     # 2. Initialize and load the document
     await chroma_manager.initialize()
-    await chroma_manager.load_documents(str(tmp_path))
 
     # 3. Search for 'cats'
     results = await chroma_manager.search("cats", n_results=2)
@@ -70,26 +72,29 @@ async def test_end_to_end_index_and_search(
 
 @pytest.mark.asyncio
 async def test_multiple_files_indexing(
-    tmp_path: Path, chroma_manager: ChromaLocalRAGManager
+    chroma_manager: ChromaLocalRAGManager,
 ) -> None:
     """Test indexing and searching across multiple files."""
     # Write multiple files
-    (tmp_path / "alpha.txt").write_text("Alpha alpha.")
-    (tmp_path / "beta.md").write_text("Beta beta.")
-    (tmp_path / "gamma.csv").write_text("col1,col2\n1,2\n3,4")
+
+    (Path(chroma_manager.documents_root) / "alpha.txt").write_text(
+        "Alpha alpha.", encoding="utf-8"
+    )
+    (Path(chroma_manager.documents_root) / "beta.txt").write_text(
+        "Beta beta.", encoding="utf-8"
+    )
+    (Path(chroma_manager.documents_root) / "gamma.txt").write_text(
+        "Gamma gamma.", encoding="utf-8"
+    )
     await chroma_manager.initialize()
-    await chroma_manager.load_documents(str(tmp_path))
     results = await chroma_manager.search("beta")
     assert any("beta" in r["content"].lower() for r in results)
 
 
 @pytest.mark.asyncio
-async def test_empty_directory(
-    tmp_path: Path, chroma_manager: ChromaLocalRAGManager
-) -> None:
+async def test_empty_directory(chroma_manager: ChromaLocalRAGManager) -> None:
     """Test behavior when loading an empty directory."""
     await chroma_manager.initialize()
-    await chroma_manager.load_documents(str(tmp_path))
     # No exception, nothing to index, search returns nothing
     results = await chroma_manager.search("anything")
     assert results == []

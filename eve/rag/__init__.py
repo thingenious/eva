@@ -23,11 +23,13 @@ def get_rag_manager() -> RAGManager:
         return ChromaLocalRAGManager(
             persist_directory=settings.chroma_db_dir,
             collection_name=settings.chroma_collection_name,
+            documents_root=settings.rag_docs_folder,
         )
     return ChromaRemoteRAGManager(
         host=settings.chroma_host,
         port=settings.chroma_port,
         collection_name=settings.chroma_collection_name,
+        documents_root=settings.rag_docs_folder,
     )
 
 

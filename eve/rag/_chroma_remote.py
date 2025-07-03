@@ -26,16 +26,18 @@ class ChromaRemoteRAGManager(BaseRAGManager):  # pragma: no cover
         self,
         host: str = "localhost",
         port: int = 8000,
-        collection_name: str = "documents",
+        collection_name: str = "eve_rag",
         model_name: str = "all-MiniLM-L6-v2",
         chunk_size: int = 1000,
         chunk_overlap: int = 200,
         use_ssl: bool = False,
+        documents_root: str = "documents",
     ):
         super().__init__()
         self.host = host
         self.port = port
         self.collection_name = collection_name
+        self.documents_root = documents_root
         self.model_name = model_name
         self.chunk_size = chunk_size
         self.chunk_overlap = chunk_overlap

@@ -5,6 +5,7 @@
 
 # pylint: disable=too-many-try-statements,broad-exception-caught,duplicate-code
 import asyncio
+import os
 import uuid as uuid_lib
 from pathlib import Path
 from typing import Any, Optional
@@ -27,6 +28,7 @@ class ChromaLocalRAGManager(BaseRAGManager):
         local: bool = True,
         persist_directory: str = "chroma_db",
         collection_name: str = "eve_rag",
+        documents_root: str = "documents",
         chunk_size: int = 1000,
         chunk_overlap: int = 200,
     ):
@@ -34,6 +36,7 @@ class ChromaLocalRAGManager(BaseRAGManager):
         self.local = local
         self.persist_directory = persist_directory
         self.collection_name = collection_name
+        self.documents_root = documents_root
         self.chunk_size = chunk_size
         self.chunk_overlap = chunk_overlap
         self.collection: Optional[Collection] = None
@@ -57,6 +60,7 @@ class ChromaLocalRAGManager(BaseRAGManager):
                     collection_name=self.collection_name,
                 )
             )
+            await self.load_documents(self.documents_root)
         except Exception as e:  # pragma: no cover
             raise RuntimeError(f"Failed to initialize ChromaDB: {e}") from e
 
@@ -174,6 +178,7 @@ class ChromaLocalRAGManager(BaseRAGManager):
             )
 
         path = Path(documents_path)
+        print(path, os.listdir(path))
         files = self._get_supported_files(path)
 
         documents: list[str] = []

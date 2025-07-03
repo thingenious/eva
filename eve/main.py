@@ -262,6 +262,11 @@ class ChatApplication:
             rag_results = await self.app.rag_manager.search(
                 user_message, n_results=3
             )
+            logger.debug(
+                "RAG search results for conversation %s: %s",
+                conversation_id,
+                rag_results,
+            )
             rag_context = "\n".join([doc["content"] for doc in rag_results])
 
             # Prepare messages for LLM
