@@ -29,7 +29,12 @@ Break your response into logical segments (sentences or paragraphs) and assign e
 
 Each segment should be a complete thought or sentence. Aim for 2-5 segments per response depending on content length.
 
-IMPORTANT: Your entire response must be valid JSON. Do not include any text outside the JSON structure."""
+CRITICAL REQUIREMENTS:
+- Your entire response must be valid JSON
+- Output EXACTLY ONE JSON object
+- Do not repeat or duplicate the JSON structure
+- Do not include any text outside the JSON structure
+- Start with { and end with }."""
 
 
 UPDATE_SUMMARY_PROMPT = """You are tasked with updating a conversation summary. You have:

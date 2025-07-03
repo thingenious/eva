@@ -20,14 +20,14 @@ from .prompts import BASE_SYSTEM_PROMPT
 class OpenAILLMManager(BaseLLMManager):
     """OpenAI LLM manager implementation."""
 
-    def __init__(self, model_name: str = "gpt-4") -> None:
+    def __init__(self, model_name: str = "gpt-4.1") -> None:
         """Initialize the OpenAI LLM manager.
 
         Parameters
         ----------
         model_name : str, optional
             The name of the OpenAI model to use,
-            by default "gpt-4".
+            by default "gpt-4.1".
         """
         super().__init__(model_name=model_name)
         self.client = openai.AsyncOpenAI(api_key=settings.openai_api_key)

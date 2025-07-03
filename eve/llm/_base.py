@@ -5,13 +5,13 @@
 
 # pylint: disable=unused-argument,inconsistent-quotes
 # pyright: reportReturnType=false
-import json
 import logging
 from typing import Any, AsyncIterator, Iterator, Protocol, runtime_checkable
 
 from eve.models import ChatMessage, ValidEmotion
 
 from .prompts import NEW_SUMMARY_PROMPT, UPDATE_SUMMARY_PROMPT
+from .utils import attempt_json_repair, clean_and_validate_json
 
 
 @runtime_checkable
@@ -163,9 +163,13 @@ class BaseLLMManager(LLMManager):
             An iterator yielding ChatMessage objects parsed from the response.
         """
         # pylint: disable=too-many-try-statements, broad-exception-caught
-        self.logger.debug("OpenAI: Parsing response text: %s", response_text)
+        self.logger.debug("Parsing response text: %s", response_text)
         try:
-            response_data = json.loads(response_text)
+            # First attempt to repair common issues
+            cleaned_response = attempt_json_repair(response_text)
+            # Then validate and parse using your robust function
+            response_data = clean_and_validate_json(cleaned_response)
+            # response_data = json.loads(response_text)
             segments = response_data.get("segments", [])
             for i, segment in enumerate(segments):
                 content = segment.get("content", "")
@@ -179,17 +183,21 @@ class BaseLLMManager(LLMManager):
                     emotion=emotion,
                     is_final=is_final,
                 )
-        except json.JSONDecodeError as e:
-            self.logger.error("OpenAI: Failed to parse JSON response: %s", e)
+        except ValueError as e:
+            self.logger.error("Failed to validate JSON response: %s", e)
             self.logger.error("Raw response: %s", response_text)
             yield ChatMessage(
                 type="message",
                 content=response_text,
                 emotion="neutral",
                 is_final=True,
+                metadata={
+                    "error": str(e),
+                    "raw_response": response_text,
+                },
             )
         except BaseException as e:  # pragma: no cover
-            self.logger.error("OpenAI: Unexpected error: %s", e)
+            self.logger.error("Unexpected error: %s", e)
             yield ChatMessage(
                 type="error",
                 content=f"Error processing response: {str(e)}",
