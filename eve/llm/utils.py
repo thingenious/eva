@@ -165,18 +165,6 @@ def validate_schema(data: Any) -> bool:
     if len(segments) == 0:  # pyright: ignore
         raise ValueError("'segments' array cannot be empty")
 
-    # Validate each segment
-    valid_emotions: set[str] = {
-        "neutral",
-        "happy",
-        "excited",
-        "thoughtful",
-        "curious",
-        "confident",
-        "concerned",
-        "empathetic",
-    }
-
     for i, segment in enumerate(segments):  # pyright: ignore
         if not isinstance(segment, dict):
             raise ValueError(f"Segment {i} must be an object")
@@ -191,12 +179,6 @@ def validate_schema(data: Any) -> bool:
 
         if not isinstance(segment["emotion"], str):
             raise ValueError(f"Segment {i} 'emotion' must be a string")
-        emotion = segment["emotion"].lower()
-        if emotion not in valid_emotions:
-            raise ValueError(
-                f"Segment {i} has invalid emotion '{emotion}'."
-                f" Must be one of: {valid_emotions}"
-            )
 
         if not segment["content"].strip():
             raise ValueError(f"Segment {i} 'content' cannot be empty")

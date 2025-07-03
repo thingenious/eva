@@ -32,6 +32,7 @@ Each segment should be a complete thought or sentence. Aim for 2-5 segments per 
 CRITICAL REQUIREMENTS:
 - Your entire response must be valid JSON
 - Output EXACTLY ONE JSON object
+- Only use an emotion from the provided list
 - Do not repeat or duplicate the JSON structure
 - Do not include any text outside the JSON structure
 - Start with { and end with }."""
