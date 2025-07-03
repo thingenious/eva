@@ -6,6 +6,8 @@
 # pyright: reportUnusedFunction=false
 # pylint: disable=broad-exception-caught,too-many-try-statements,unused-argument
 import logging
+import os
+import sys
 import uuid
 from contextlib import asynccontextmanager
 from datetime import datetime, timezone
@@ -25,8 +27,6 @@ from eve.llm import LLMManager, get_llm_manager
 from eve.rag import RAGManager, get_rag_manager
 
 from ._version import __version__
-
-logger = logging.getLogger(__name__)
 
 
 class EveApp(FastAPI):
@@ -69,6 +69,7 @@ class ChatApplication:
 
     def __init__(self) -> None:
         self.active_connections: dict[str, WebSocket] = {}
+        self.log = logging.getLogger(__name__)
         self.app = EveApp(
             lifespan=lifespan,
             docs_url="/docs",
@@ -129,7 +130,7 @@ class ChatApplication:
             try:
                 await self.handle_websocket_connection(websocket, connection_id)
             except WebSocketDisconnect:
-                logger.info("WebSocket %s disconnected", connection_id)
+                self.log.info("WebSocket %s disconnected", connection_id)
             finally:
                 self.active_connections.pop(connection_id, None)
 
@@ -187,13 +188,13 @@ class ChatApplication:
                     )
 
         except Exception as e:
-            logger.error("WebSocket error: %s", e)
+            self.log.error("WebSocket error: %s", e)
             try:
                 await websocket.send_json(
                     {"type": "error", "content": f"Server error: {str(e)}"}
                 )
             except Exception as send_error:
-                logger.error(
+                self.log.error(
                     "Error sending error message to client: %s", send_error
                 )
 
@@ -262,7 +263,7 @@ class ChatApplication:
             rag_results = await self.app.rag_manager.search(
                 user_message, n_results=3
             )
-            logger.debug(
+            self.log.debug(
                 "RAG search results for conversation %s: %s",
                 conversation_id,
                 rag_results,
@@ -301,7 +302,7 @@ class ChatApplication:
             )
 
         except Exception as e:
-            logger.error("Error processing message: %s", e)
+            self.log.error("Error processing message: %s", e)
             try:
                 await websocket.send_json(
                     {
@@ -311,7 +312,7 @@ class ChatApplication:
                     }
                 )
             except Exception as send_error:
-                logger.error(
+                self.log.error(
                     "Error sending error message to client: %s", send_error
                 )
 
@@ -357,7 +358,7 @@ class ChatApplication:
                 ]
 
             if not messages_to_summarize:
-                logger.info(
+                self.log.info(
                     "No messages to summarize for conversation %s",
                     conversation_id,
                 )
@@ -378,14 +379,14 @@ class ChatApplication:
                 conversation_id, new_summary, total_message_count
             )
 
-            logger.info(
+            self.log.info(
                 "Updated cumulative summary for conversation %s (%d messages)",
                 conversation_id,
                 total_message_count,
             )
 
         except Exception as e:
-            logger.error("Error creating summary: %s", e)
+            self.log.error("Error creating summary: %s", e)
 
 
 def create_app() -> EveApp:
@@ -400,15 +401,22 @@ def create_app() -> EveApp:
     return chat_app.app
 
 
+if "--log-level" in sys.argv:
+    log_level_index = sys.argv.index("--log-level") + 1
+    if log_level_index < len(sys.argv):
+        os.environ["LOG_LEVEL"] = sys.argv[log_level_index]
+        settings.log_level = sys.argv[log_level_index]
+
+logging.basicConfig(
+    level=settings.log_level.upper(),
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+)
+
 app = create_app()
 
 
 if __name__ == "__main__":
-    logging.basicConfig(
-        level=settings.log_level.upper(),
-        format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-    )
-    logger.info("Starting EVE application version %s", __version__)
+    logging.info("Starting EVE application version %s", __version__)
     uvicorn.run(
         "eve.main:app",
         host=settings.host,
@@ -420,4 +428,4 @@ if __name__ == "__main__":
         date_header=False,
         forwarded_allow_ips="*",
     )
-    logger.info("EVE application started successfully")
+    logging.info("EVE application started successfully")
