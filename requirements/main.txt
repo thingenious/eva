@@ -28,6 +28,6 @@ python_dotenv==1.1.0
 qdrant-client==1.14.3
 reportlab==4.4.2
 sentence-transformers==4.1.0
-uvicorn[standard]==0.34.3
+uvicorn[standard]==0.35.0
 uvloop==0.21.0; sys_platform != 'win32'
 weaviate-client==4.15.2

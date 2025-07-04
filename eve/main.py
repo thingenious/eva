@@ -8,6 +8,7 @@
 import logging
 import os
 import sys
+import traceback
 import uuid
 from contextlib import asynccontextmanager
 from datetime import datetime, timezone
@@ -120,6 +121,10 @@ class ChatApplication:
             """
             token, subprotocol = extract_ws_token(websocket)
             if not token or not verify_ws_token(token):
+                self.log.warning(
+                    "WebSocket connection attempt with "
+                    "invalid or missing API key"
+                )
                 await websocket.close(
                     code=1008, reason="Invalid or missing API key"
                 )
@@ -186,8 +191,10 @@ class ChatApplication:
                     await self.process_user_message(
                         websocket, conversation_id, user_message
                     )
-
+        except WebSocketDisconnect:
+            self.log.debug("WebSocket %s disconnected", connection_id)
         except Exception as e:
+            traceback.print_exc()
             self.log.error("WebSocket error: %s", e)
             try:
                 await websocket.send_json(
@@ -312,6 +319,7 @@ class ChatApplication:
                     }
                 )
             except Exception as send_error:
+                traceback.print_exc()
                 self.log.error(
                     "Error sending error message to client: %s", send_error
                 )
@@ -427,5 +435,6 @@ if __name__ == "__main__":
         server_header=False,
         date_header=False,
         forwarded_allow_ips="*",
+        ws="wsproto",
     )
     logging.info("EVE application started successfully")
