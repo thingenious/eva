@@ -227,6 +227,12 @@ class ChatApplication:
             The ID of the conversation.
         user_message : str
             The content of the user message.
+
+        Raises
+        ------
+        RuntimeError
+            If there is an error during message processing
+            or LLM response generation.
         """
         try:
             # Save user message
