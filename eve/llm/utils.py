@@ -89,6 +89,27 @@ def clean_and_validate_json(response_text: str) -> dict[str, Any]:
     )
 
 
+def fix_spacing_after_punctuation(text: str) -> str:
+    """Fix spacing after punctuation.
+
+    Ensure proper spacing after punctuation like ., ?, !
+    if followed by a letter or number.
+
+    Example: "Paris.It" => "Paris. It"
+
+    Parameters
+    ----------
+    text : str
+        The input text to fix.
+
+    Returns
+    -------
+    str
+        The text with fixed spacing after punctuation.
+    """
+    return re.sub(r"([.!?])([A-Za-z0-9])", r"\1 \2", text)
+
+
 # Optional: Add a repair function for common issues
 def attempt_json_repair(response_text: str) -> str:
     """Try to repair common JSON issues.

@@ -138,6 +138,13 @@ class ChatApplication:
             except WebSocketDisconnect:
                 self.log.info("WebSocket %s disconnected", connection_id)
             finally:
+                if websocket in self.active_connections.values():
+                    try:
+                        await websocket.close()
+                    except Exception as e:
+                        self.log.debug(
+                            "Error closing WebSocket %s: %s", connection_id, e
+                        )
                 self.active_connections.pop(connection_id, None)
 
     async def handle_websocket_connection(
@@ -195,8 +202,7 @@ class ChatApplication:
         except WebSocketDisconnect:
             self.log.debug("WebSocket %s disconnected", connection_id)
         except Exception as e:
-            traceback.print_exc()
-            self.log.error("WebSocket error: %s", e)
+            self.log.debug("WebSocket error: %s", e)
             try:
                 await websocket.send_json(
                     {"type": "error", "content": f"Server error: {str(e)}"}
@@ -206,7 +212,8 @@ class ChatApplication:
                     "Error sending error message to client: %s", send_error
                 )
 
-    # pylint: disable=too-many-arguments,too-many-locals, too-complex
+    # pylint: disable=too-many-arguments,too-many-locals,
+    # pylint: disable=too-complex,too-many-statements
     async def process_user_message(  # noqa: C901
         self, websocket: WebSocket, conversation_id: str, user_message: str
     ) -> None:
@@ -230,6 +237,11 @@ class ChatApplication:
             # Get conversation history
             messages = await self.app.db_manager.get_conversation_messages(
                 conversation_id, settings.max_history_messages
+            )
+            self.log.debug(
+                "Retrieved %d messages for conversation %s",
+                len(messages),
+                conversation_id,
             )
 
             # Check if we need to summarize old messages
@@ -339,7 +351,9 @@ class ChatApplication:
                 self.log.error(
                     "Error during response streaming: %s", stream_error
                 )
-                return
+                raise RuntimeError(
+                    "Error generating response from LLM"
+                ) from stream_error
             if response_chunks:
                 # Save complete response
                 complete_response = " ".join(response_chunks)

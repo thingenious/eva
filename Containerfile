@@ -12,11 +12,20 @@ COPY requirements /tmp/requirements
 RUN pip install --no-cache-dir -r /tmp/requirements/main.txt \
     && rm -rf /tmp/requirements
 
+# Add non-root user
+ARG GROUP_ID=1000
+ENV GROUP_ID=${GROUP_ID}
+RUN addgroup --system --gid ${GROUP_ID} eva
+ARG USER_ID=1000
+ENV USER_ID=${USER_ID}
+RUN adduser --disabled-password --gecos ''  --uid ${USER_ID} --gid ${GROUP_ID} eva && \
+    mkdir -p /app && chown -R eva:eva /app
+
 # Copy application code
-COPY eve /app/eve
+COPY --chown=eva:eva eve /app/eve
 
 # Create necessary directories
-RUN mkdir -p documents chroma_db logs
+RUN mkdir -p /app/documents /app/chroma_db /app/logs
 
 # Expose port
 EXPOSE 8000

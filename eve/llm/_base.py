@@ -11,7 +11,11 @@ from typing import Any, AsyncIterator, Iterator, Protocol, runtime_checkable
 from eve.models import ChatMessage, ValidEmotion
 
 from .prompts import NEW_SUMMARY_PROMPT, UPDATE_SUMMARY_PROMPT
-from .utils import attempt_json_repair, clean_and_validate_json
+from .utils import (
+    attempt_json_repair,
+    clean_and_validate_json,
+    fix_spacing_after_punctuation,
+)
 
 
 @runtime_checkable
@@ -167,6 +171,7 @@ class BaseLLMManager(LLMManager):
         try:
             # First attempt to repair common issues
             cleaned_response = attempt_json_repair(response_text)
+            cleaned_response = fix_spacing_after_punctuation(cleaned_response)
             # Then validate and parse using your robust function
             response_data = clean_and_validate_json(cleaned_response)
             # response_data = json.loads(response_text)

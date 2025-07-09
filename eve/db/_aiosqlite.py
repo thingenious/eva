@@ -7,6 +7,7 @@
 # pyright: reportUnknownArgumentType=false, reportUnknownVariableType=false
 
 import json
+import logging
 import uuid
 from typing import Any, Optional
 
@@ -26,6 +27,7 @@ class AioSqliteDatabaseManager(DatabaseManager):
         else:
             self.db_path = database_url
         self.connection: Optional[aiosqlite.Connection] = None
+        self.log = logging.getLogger(__name__)
 
     async def init_db(self) -> None:
         # Create tables once at startup; keep a persistent connection
@@ -166,6 +168,9 @@ class AioSqliteDatabaseManager(DatabaseManager):
         )
         rows = await cursor.fetchall()
         if not rows:  # pragma: no cover
+            self.log.debug(
+                "No messages found for conversation %s", conversation_id
+            )
             return []
         return [
             {
@@ -249,6 +254,9 @@ class AioSqliteDatabaseManager(DatabaseManager):
                 "message_count": row[1],
                 "created_at": row[2],
             }
+        self.log.debug(  # pragma: no cover
+            "No summary found for conversation %s", conversation_id
+        )
         return None  # pragma: no cover
 
     async def close(self) -> None:
