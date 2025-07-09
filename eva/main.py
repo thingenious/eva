@@ -1,10 +1,11 @@
 # SPDX-License-Identifier: Apache-2.0.
 # Copyright (c) 2024 - 2025 Thingenious.
 
-"""Main entry point for the EVE application."""
+"""Main entry point for the EVA application."""
 
 # pyright: reportUnusedFunction=false
 # pylint: disable=broad-exception-caught,too-many-try-statements,unused-argument
+# pylint: disable=too-complex
 import logging
 import os
 import sys
@@ -21,18 +22,18 @@ from fastapi.middleware.trustedhost import TrustedHostMiddleware
 from fastapi.responses import ORJSONResponse
 from uvicorn.middleware.proxy_headers import ProxyHeadersMiddleware
 
-from eve.auth import extract_ws_token, verify_ws_token
-from eve.config import settings
-from eve.db import DatabaseManager, get_db_manager
-from eve.llm import LLMManager, get_llm_manager
-from eve.llm.prompts import BASE_SYSTEM_PROMPT
-from eve.rag import RAGManager, get_rag_manager
+from eva.auth import extract_ws_token, verify_ws_token
+from eva.config import settings
+from eva.db import DatabaseManager, get_db_manager
+from eva.llm import LLMManager, get_llm_manager
+from eva.llm.prompts import BASE_SYSTEM_PROMPT
+from eva.rag import RAGManager, get_rag_manager
 
 from ._version import __version__
 
 
-class EveApp(FastAPI):
-    """Custom FastAPI application class for EVE."""
+class EvaApp(FastAPI):
+    """Custom FastAPI application class for EVA."""
 
     db_manager: DatabaseManager
     rag_manager: RAGManager
@@ -40,12 +41,12 @@ class EveApp(FastAPI):
 
 
 @asynccontextmanager
-async def lifespan(application: EveApp) -> AsyncIterator[None]:
+async def lifespan(application: EvaApp) -> AsyncIterator[None]:
     """Application lifespan context manager.
 
     Parameters
     ----------
-    application : EveApp
+    application : EvaApp
         The FastAPI application
 
     Yields
@@ -67,16 +68,16 @@ async def lifespan(application: EveApp) -> AsyncIterator[None]:
 
 
 class ChatApplication:
-    """Main application class for the EVE chat application."""
+    """Main application class for the EVA chat application."""
 
     def __init__(self) -> None:
         self.active_connections: dict[str, WebSocket] = {}
         self.log = logging.getLogger(__name__)
-        self.app = EveApp(
+        self.app = EvaApp(
             lifespan=lifespan,
             docs_url="/docs",
             redoc_url=None,
-            title="EVE",
+            title="EVA",
             description="Simple chat application using FastAPI",
             version=__version__,
             openapi_url="/openapi.json",
@@ -459,7 +460,7 @@ class ChatApplication:
             self.log.error("Error creating summary: %s", e)
 
 
-def create_app() -> EveApp:
+def create_app() -> EvaApp:
     """Create and configure the FastAPI application.
 
     Returns
@@ -486,9 +487,9 @@ app = create_app()
 
 
 if __name__ == "__main__":
-    logging.info("Starting EVE application version %s", __version__)
+    logging.info("Starting EVA application version %s", __version__)
     uvicorn.run(
-        "eve.main:app",
+        "eva.main:app",
         host=settings.host,
         port=settings.port,
         log_level=settings.log_level,
@@ -499,4 +500,4 @@ if __name__ == "__main__":
         forwarded_allow_ips="*",
         ws="wsproto",
     )
-    logging.info("EVE application started successfully")
+    logging.info("EVA application started successfully")

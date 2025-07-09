@@ -9,7 +9,7 @@
 
 import pytest
 
-from eve.auth import (
+from eva.auth import (
     extract_ws_token,
     get_token_from_auth_header,
     get_token_from_cookie,
@@ -58,7 +58,7 @@ def test_get_token_from_auth_header() -> None:
     """Test extracting token from WebSocket authorization header."""
     ws = DummyWS(headers={"authorization": "Bearer secret42"})
     assert get_token_from_auth_header(ws, "")[0] == "secret42"
-    ws = DummyWS(headers={"authorization": "Token whatever"})
+    ws = DummyWS(headers={"authorization": "Token whatevar"})
     assert get_token_from_auth_header(ws, "")[0] is None
     ws = DummyWS(headers={})
     assert get_token_from_auth_header(ws, "")[0] is None
@@ -125,6 +125,6 @@ def test_extract_ws_token_with_custom_subprotocol() -> None:
 
 def test_verify_ws_token(monkeypatch: pytest.MonkeyPatch) -> None:
     """Test verifying WebSocket token against configured API key."""
-    monkeypatch.setattr("eve.config.settings.chat_api_key", "supersecret")
+    monkeypatch.setattr("eva.config.settings.chat_api_key", "supersecret")
     assert verify_ws_token("supersecret") is True
     assert verify_ws_token("notsecret") is False

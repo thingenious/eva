@@ -1,6 +1,6 @@
 # API Reference
 
-Complete technical reference for the EVE WebSocket Chat API.
+Complete technical reference for the EVA WebSocket Chat API.
 
 ## Message Schema
 
@@ -191,7 +191,7 @@ The server attempts authentication in this order:
 
 ### Automatic Document Retrieval
 
-EVE automatically searches relevant documents based on user messages:
+EVA automatically searches relevant documents based on user messages:
 
 - **Context-aware**: Searches are based on message content and conversation history
 - **Source attribution**: All sources are listed in `metadata.sources`
@@ -324,8 +324,8 @@ MAX_HISTORY_MESSAGES=50
 SUMMARY_THRESHOLD=30
 
 # Database Configuration
-DATABASE_URL=sqlite:///eve.db
-# DATABASE_URL=postgresql://user:password@localhost:5432/evedb
+DATABASE_URL=sqlite:///eva.db
+# DATABASE_URL=postgresql://user:password@localhost:5432/evadb
 
 # Security
 TRUSTED_HOSTS=localhost,127.0.0.1,your-domain.com
@@ -342,18 +342,18 @@ MAX_MESSAGE_LENGTH=4096
 ```yaml
 version: '3.8'
 services:
-  eve-chat:
-    image: eve-chat-api:latest
+  eva-chat:
+    image: eva-chat-api:latest
     ports:
       - "8000:8000"
     environment:
       - CHAT_API_KEY=${CHAT_API_KEY}
       - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
-      - DATABASE_URL=postgresql://postgres:password@postgres:5432/evedb
+      - DATABASE_URL=postgresql://postgres:password@postgres:5432/evadb
       - RAG_DOCS_FOLDER=/app/documents
     volumes:
       - ./documents:/app/documents:ro
-      - eve_data:/app/data
+      - eva_data:/app/data
     depends_on:
       - postgres
     restart: unless-stopped
@@ -361,7 +361,7 @@ services:
   postgres:
     image: postgres:15
     environment:
-      - POSTGRES_DB=evedb
+      - POSTGRES_DB=evadb
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=password
     volumes:
@@ -369,7 +369,7 @@ services:
     restart: unless-stopped
 
 volumes:
-  eve_data:
+  eva_data:
   postgres_data:
 ```
 
@@ -569,8 +569,8 @@ Both tools support WebSocket testing with:
 
 ```shell
 # Clone repository
-git clone https://github.com/thingenious/eve.git
-cd eve
+git clone https://github.com/thingenious/eva.git
+cd eva
 
 # Install dependencies
 pip install -r requirements/all.txt
@@ -579,12 +579,12 @@ pip install -r requirements/all.txt
 export CHAT_API_KEY=dev-test-key-12345
 export ANTHROPIC_API_KEY=your-anthropic-key
 export RAG_DOCS_FOLDER=./test_documents
-export DATABASE_URL=sqlite:///dev_eve.db
+export DATABASE_URL=sqlite:///dev_eva.db
 
 # Run development server
-python -m eve.main --host 0.0.0.0 --port 8000
+python -m eva.main --host 0.0.0.0 --port 8000
 # or:
-python -m uvicorn eve.main:app --reload --host 0.0.0.0 --port 8000
+python -m uvicorn eva.main:app --reload --host 0.0.0.0 --port 8000
 ```
 
 #### Test Documents
@@ -741,4 +741,4 @@ ws.onmessage = function(event) {
 
 ---
 
-*This API reference is for EVE WebSocket Chat API v1.0. For the latest updates and changes, check the changelog or contact support.*
+*This API reference is for EVA WebSocket Chat API v1.0. For the latest updates and changes, check the changelog or contact support.*

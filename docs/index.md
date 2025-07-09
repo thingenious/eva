@@ -1,6 +1,6 @@
-# EVE WebSocket Chat API
+# EVA WebSocket Chat API
 
-Welcome to the EVE WebSocket Chat API documentation. EVE is a real-time chat API service built with WebSocket technology, featuring conversation history, intelligent summarization, and Retrieval-Augmented Generation (RAG) capabilities.
+Welcome to the EVA WebSocket Chat API documentation. EVA is a real-time chat API service built with WebSocket technology, featuring conversation history, intelligent summarization, and Retrieval-Augmented Generation (RAG) capabilities.
 
 ## ✨ Key Features
 
@@ -62,30 +62,30 @@ The API follows a simple but powerful message flow:
 ```mermaid
 sequenceDiagram
     participant Client
-    participant EVE API
+    participant EVA API
     participant AI Engine
     participant Document Store
     
-    Client->>EVE API: Connect with authentication
-    EVE API-->>Client: Connection established
+    Client->>EVA API: Connect with authentication
+    EVA API-->>Client: Connection established
     
-    Client->>EVE API: start_conversation
-    EVE API-->>Client: conversation_started
+    Client->>EVA API: start_conversation
+    EVA API-->>Client: conversation_started
     
-    Client->>EVE API: user_message
-    EVE API->>Document Store: Search relevant docs
-    EVE API->>AI Engine: Generate response with context
-    AI Engine-->>EVE API: Segmented response
-    EVE API-->>Client: message (chunk 1, emotion: thoughtful)
-    EVE API-->>Client: message (chunk 2, emotion: excited)
-    EVE API-->>Client: message (chunk 3, is_final: true)
+    Client->>EVA API: user_message
+    EVA API->>Document Store: Search relevant docs
+    EVA API->>AI Engine: Generate response with context
+    AI Engine-->>EVA API: Segmented response
+    EVA API-->>Client: message (chunk 1, emotion: thoughtful)
+    EVA API-->>Client: message (chunk 2, emotion: excited)
+    EVA API-->>Client: message (chunk 3, is_final: true)
 ```
 
-## 🎯 What Makes EVE Special
+## 🎯 What Makes EVA Special
 
 ### Emotional Intelligence
 
-EVE doesn't just respond with text—it provides emotional context that helps create more engaging conversations. Whether the response is `excited` about a discovery or `thoughtful` about a complex topic, you'll know the tone.
+EVA doesn't just respond with text—it provides emotional context that helps create more engaging conversations. Whether the response is `excited` about a discovery or `thoughtful` about a complex topic, you'll know the tone.
 
 ### Smart Segmentation
 
@@ -101,10 +101,10 @@ Every conversation is preserved with intelligent summarization, so context is ma
 
 ## 🔗 Next Steps
 
-- **New to EVE?** Start with the [Getting Started Guide](getting-started.md)
+- **New to EVA?** Start with the [Getting Started Guide](getting-started.md)
 - **Need technical details?** Check the [API Reference](api-reference.md)
 - **Want to see code?** Browse the [Client Examples](client-examples.md)
 
 ---
 
-*Ready to build amazing conversational experiences with EVE? Let's get started!*
+*Ready to build amazing conversational experiences with EVA? Let's get started!*

@@ -26,7 +26,7 @@ class ChromaRemoteRAGManager(BaseRAGManager):  # pragma: no cover
         self,
         host: str = "localhost",
         port: int = 8000,
-        collection_name: str = "eve_rag",
+        collection_name: str = "eva_rag",
         model_name: str = "all-MiniLM-L6-v2",
         chunk_size: int = 1000,
         chunk_overlap: int = 200,

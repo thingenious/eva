@@ -12,7 +12,7 @@ from pathlib import Path
 
 import pytest
 
-from eve.rag._chroma_local import ChromaLocalRAGManager
+from eva.rag._chroma_local import ChromaLocalRAGManager
 
 
 @pytest.fixture(name="chroma_manager")

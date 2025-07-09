@@ -16,8 +16,8 @@ from httpx_ws import aconnect_ws
 from httpx_ws._exceptions import WebSocketDisconnect
 from httpx_ws.transport import ASGIWebSocketTransport
 
-from eve.main import create_app
-from eve.models import ChatMessage
+from eva.main import create_app
+from eva.models import ChatMessage
 
 
 @pytest.mark.asyncio
@@ -25,7 +25,7 @@ async def test_websocket_with_query() -> None:
     """Test that the WebSocket connection works as expected."""
     api_key = os.getenv("CHAT_API_KEY", "super-secret")
     app = create_app()
-    with patch("eve.main.settings.chat_api_key", api_key):
+    with patch("eva.main.settings.chat_api_key", api_key):
         async with httpx.AsyncClient(
             transport=ASGIWebSocketTransport(app)
         ) as client:
@@ -47,7 +47,7 @@ async def test_websocket_with_subprotocol() -> None:
     """Test that the WebSocket connection works with subprotocols."""
     api_key = os.getenv("CHAT_API_KEY", "super-secret")
     app = create_app()
-    with patch("eve.main.settings.chat_api_key", api_key):
+    with patch("eva.main.settings.chat_api_key", api_key):
         async with httpx.AsyncClient(
             transport=ASGIWebSocketTransport(app)
         ) as client:
@@ -122,14 +122,14 @@ async def test_websocket_chat_with_managers_mocked() -> None:
     mock_db.init_db = AsyncMock()
     mock_db.close = AsyncMock()
 
-    # Patch them in the EveApp instance
+    # Patch them in the EvaApp instance
     app.llm_manager = mock_llm
     app.rag_manager = mock_rag
     app.db_manager = mock_db
 
     # --- run the websocket test ---
     api_key = "super-secret"
-    with patch("eve.main.settings.chat_api_key", api_key):
+    with patch("eva.main.settings.chat_api_key", api_key):
         async with httpx.AsyncClient(
             transport=ASGIWebSocketTransport(app)
         ) as client:
@@ -203,7 +203,7 @@ async def test_websocket_chat_handles_llm_error() -> None:
     app.db_manager = mock_db
 
     api_key = "super-secret"
-    with patch("eve.main.settings.chat_api_key", api_key):
+    with patch("eva.main.settings.chat_api_key", api_key):
         async with httpx.AsyncClient(
             transport=ASGIWebSocketTransport(app)
         ) as client:

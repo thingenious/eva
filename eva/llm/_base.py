@@ -8,7 +8,7 @@
 import logging
 from typing import Any, AsyncIterator, Iterator, Protocol, runtime_checkable
 
-from eve.models import ChatMessage, ValidEmotion
+from eva.models import ChatMessage, ValidEmotion
 
 from .prompts import NEW_SUMMARY_PROMPT, UPDATE_SUMMARY_PROMPT
 from .utils import (

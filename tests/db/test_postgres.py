@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0.
 # Copyright (c) 2024 - 2025 Thingenious.
 
-"""Tests for eve.db.postgres.*."""
+"""Tests for eva.db.postgres.*."""
 # pylint: disable=missing-return-doc,missing-param-doc,missing-yield-doc
 # pylint: disable=missing-function-docstring,missing-class-docstring
 
@@ -12,7 +12,7 @@ from testcontainers.postgres import (  # type: ignore[import-untyped]
     PostgresContainer,
 )
 
-from eve.db._postgres import PostgresDatabaseManager
+from eva.db._postgres import PostgresDatabaseManager
 from tests.conftest import is_docker_available
 
 pytestmark = pytest.mark.skipif(

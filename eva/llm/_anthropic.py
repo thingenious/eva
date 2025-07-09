@@ -11,8 +11,8 @@ from typing import Any, AsyncIterator
 from anthropic import AsyncAnthropic
 from anthropic.types import Message, MessageParam
 
-from eve.config import settings
-from eve.models import ChatMessage
+from eva.config import settings
+from eva.models import ChatMessage
 
 from ._base import BaseLLMManager
 from .prompts import BASE_SYSTEM_PROMPT

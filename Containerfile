@@ -9,20 +9,22 @@ RUN apt-get update && apt-get install -y \
 
 # Copy requirements and install Python dependencies
 COPY requirements /tmp/requirements
-RUN pip install --no-cache-dir -r /tmp/requirements/main.txt \
+RUN python3 -m pip install --no-cache-dir -r /tmp/requirements/main.txt \
     && rm -rf /tmp/requirements
 
 # Add non-root user
 ARG GROUP_ID=1000
 ENV GROUP_ID=${GROUP_ID}
-RUN addgroup --system --gid ${GROUP_ID} eva
+RUN addgroup --system --gid ${GROUP_ID} user
 ARG USER_ID=1000
 ENV USER_ID=${USER_ID}
-RUN adduser --disabled-password --gecos ''  --uid ${USER_ID} --gid ${GROUP_ID} eva && \
-    mkdir -p /app && chown -R eva:eva /app
+RUN adduser --disabled-password --gecos ''  --uid ${USER_ID} --gid ${GROUP_ID} user && \
+    mkdir -p /app && chown -R user:user /app
 
 # Copy application code
-COPY --chown=eva:eva eve /app/eve
+COPY --chown=user:user eve /app/eve
+
+USER user
 
 # Create necessary directories
 RUN mkdir -p /app/documents /app/chroma_db /app/logs

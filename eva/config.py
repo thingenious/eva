@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0.
 # Copyright (c) 2024 - 2025 Thingenious.
 
-"""Configuration settings for the EVE application using Pydantic."""
+"""Configuration settings for the EVA application using Pydantic."""
 
 # pylint: disable=unused-argument
 import os
@@ -12,7 +12,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
-    """Configuration settings for the EVE application."""
+    """Configuration settings for the EVA application."""
 
     # General app config
     chat_api_key: str = "super-secret"

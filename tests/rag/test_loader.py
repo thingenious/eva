@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0.
 # Copyright (c) 2024 - 2025 Thingenious.
 
-"""Tests for the DocumentLoader class in the eve.rag.loader module."""
+"""Tests for the DocumentLoader class in the eva.rag.loader module."""
 
 # pyright: reportUnusedImport=false,reportPrivateUsage=false
 # pylint: disable=missing-return-doc,missing-param-doc,missing-yield-doc
@@ -12,7 +12,7 @@ from pathlib import Path
 
 import pytest
 
-from eve.rag.loader import DocumentLoader, _extract_text_from_element
+from eva.rag.loader import DocumentLoader, _extract_text_from_element
 
 
 @pytest.fixture(name="loader")
@@ -184,7 +184,7 @@ def test_loader_csv_import_error(
     monkeypatch.setitem(__import__("sys").modules, "pandas", None)
     from importlib import reload
 
-    import eve.rag.loader as loader_mod
+    import eva.rag.loader as loader_mod
 
     reload(loader_mod)
     with pytest.raises(ImportError):
@@ -200,7 +200,7 @@ def test_loader_docx_import_error(
     monkeypatch.setitem(__import__("sys").modules, "docx", None)
     from importlib import reload
 
-    import eve.rag.loader as loader_mod
+    import eva.rag.loader as loader_mod
 
     reload(loader_mod)
     with pytest.raises(ImportError):
@@ -216,7 +216,7 @@ def test_loader_odt_import_error(
     monkeypatch.setitem(__import__("sys").modules, "odf.opendocument", None)
     from importlib import reload
 
-    import eve.rag.loader as loader_mod
+    import eva.rag.loader as loader_mod
 
     reload(loader_mod)
     # Should not raise, just log and return ""
@@ -315,7 +315,7 @@ def test_loader_odt_table(  # noqa: C901
     )
     from importlib import reload
 
-    import eve.rag.loader as loader_mod
+    import eva.rag.loader as loader_mod
 
     reload(loader_mod)
     # Should include 'ODT Document', 'par1', 'Table:'

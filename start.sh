@@ -9,21 +9,21 @@ fi
 
 cd "$HERE" || exit 1
 
-docker build --tag tg/eve:dev -f Containerfile  .
+docker build --tag tg/eva:dev -f Containerfile  .
 
 if [ -f "${HERE}/.env" ]; then
     echo "Using .env file"
     . "${HERE}/.env"
 fi
 
-docker stop eve >/dev/null 2>&1 || true
-docker rm eve >/dev/null 2>&1 || true
+docker stop eva >/dev/null 2>&1 || true
+docker rm eva >/dev/null 2>&1 || true
 
 mkdir -p "${HERE}/documents" || exit 1
 mkdir -p "${HERE}/chroma_db" || exit 1
 
 docker run -d \
-    --name eve \
+    --name eva \
     --restart unless-stopped \
     -p ${PORT:-8000}:8000 \
     -v "${HERE}/documents:/app/documents" \
@@ -37,7 +37,7 @@ docker run -d \
     -e "SUMMARY_THRESHOLD=${SUMMARY_THRESHOLD:-30}" \
     -e "RAG_DOCS_FOLDER=${RAG_DOCS_FOLDER:-documents}" \
     -e "CHROMA_LOCAL=${CHROMA_LOCAL:-true}" \
-    -e "CHROMA_COLLECTION_NAME=${CHROMA_COLLECTION_NAME:-eve_rag}" \
+    -e "CHROMA_COLLECTION_NAME=${CHROMA_COLLECTION_NAME:-eva_rag}" \
     -e "CHROMA_HOST=${CHROMA_HOST:-localhost}" \
     -e "CHROMA_PORT=${CHROMA_PORT:-8888}" \
     -e "CHROMA_DB_DIR=${CHROMA_DB_DIR:-chroma_db}" \
@@ -47,4 +47,4 @@ docker run -d \
     -e "TRUSTED_ORIGIN_REGEX=${TRUSTED_ORIGIN_REGEX:-}" \
     -e "TRUSTED_HOSTS=${TRUSTED_HOSTS:-}" \
     -e "LOG_LEVEL=${LOG_LEVEL:-info}" \
-    tg/eve:dev
+    tg/eva:dev

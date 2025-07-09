@@ -3,15 +3,15 @@
 
 """OpenAI LLM manager implementation."""
 
-# pylint: disable=too-many-try-statements,broad-exception-caught
+# pylint: disable=too-many-try-statements,broad-exception-caught,too-complex
 import asyncio
 from typing import Any, AsyncIterator
 
 import openai
 from openai.types.responses import ResponseInputParam
 
-from eve.config import settings
-from eve.models import ChatMessage
+from eva.config import settings
+from eva.models import ChatMessage
 
 from ._base import BaseLLMManager
 
