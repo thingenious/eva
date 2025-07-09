@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0.
 # Copyright (c) 2024 - 2025 Thingenious.
 
-"""eva LLM prompt definitions for segmenting text with emotions."""
+"""EVE LLM prompt definitions for segmenting text with emotions."""
 # flake8: noqa: E501
 # pylint: disable=line-too-long
 # fmt: off

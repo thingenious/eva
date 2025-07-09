@@ -135,14 +135,14 @@ class AioSqliteDatabaseManager(DatabaseManager):
     async def get_conversation_messages(
         self, conversation_id: str, limit: int = 50
     ) -> list[dict[str, Any]]:
-        """Retrieva messages from a conversation.
+        """Retrieve messages from a conversation.
 
         Parameters
         ----------
         conversation_id : str
-            The ID of the conversation to retrieva messages from.
+            The ID of the conversation to retrieve messages from.
         limit : int, optional
-            The maximum number of messages to retrieva (default is 50).
+            The maximum number of messages to retrieve (default is 50).
 
         Returns
         -------
@@ -180,7 +180,7 @@ class AioSqliteDatabaseManager(DatabaseManager):
                 "sources": json.loads(row[3]) if row[3] else [],
                 "created_at": row[4],
             }
-            for row in revarsed(list(rows))
+            for row in reversed(list(rows))
         ]
 
     async def save_summary(
@@ -217,12 +217,12 @@ class AioSqliteDatabaseManager(DatabaseManager):
     async def get_latest_summary(
         self, conversation_id: str
     ) -> Optional[dict[str, Any]]:
-        """Retrieva the latest summary for a conversation.
+        """Retrieve the latest summary for a conversation.
 
         Parameters
         ----------
         conversation_id : str
-            The ID of the conversation for which to retrieva the latest summary.
+            The ID of the conversation for which to retrieve the latest summary.
 
         Returns
         -------

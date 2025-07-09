@@ -4,7 +4,7 @@
 """Module for loading various file types into strings."""
 
 # pylint: disable=broad-exception-caught
-# pylint: disable=too-many-try-statements,import-outside-topleval
+# pylint: disable=too-many-try-statements,import-outside-toplevel
 import json
 import logging
 from pathlib import Path

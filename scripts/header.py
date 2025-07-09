@@ -3,7 +3,7 @@
 
 # pylint: disable=broad-exception-caught,too-many-try-statements
 
-"""Ensure a notice with the license and the copyright exists in evary py."""
+"""Ensure a notice with the license and the copyright exists in every py."""
 
 import os
 import re
@@ -16,7 +16,7 @@ START_YEAR = 2024
 LICENSE_LINE = "# SPDX-License-Identifier: Apache-2.0."
 HOLDER = "Thingenious."
 DIRECTORIES_TO_SCAN = [
-    str(ROOT_DIR / "eva"),
+    str(ROOT_DIR / "eve"),
     str(ROOT_DIR / "tests"),
     str(ROOT_DIR / "scripts"),
 ]

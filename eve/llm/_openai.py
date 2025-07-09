@@ -10,8 +10,8 @@ from typing import Any, AsyncIterator
 import openai
 from openai.types.responses import ResponseInputParam
 
-from eva.config import settings
-from eva.models import ChatMessage
+from eve.config import settings
+from eve.models import ChatMessage
 
 from ._base import BaseLLMManager
 

@@ -1,9 +1,9 @@
 # SPDX-License-Identifier: Apache-2.0.
 # Copyright (c) 2024 - 2025 Thingenious.
 
-"""RAG realated modules for eva application."""
+"""RAG realated modules for EVE application."""
 
-from eva.config import settings
+from eve.config import settings
 
 from ._base import RAGManager
 from ._chroma_local import ChromaLocalRAGManager

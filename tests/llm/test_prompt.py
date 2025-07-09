@@ -1,9 +1,9 @@
 # SPDX-License-Identifier: Apache-2.0.
 # Copyright (c) 2024 - 2025 Thingenious.
 
-"""Tests for eva.llm.prompts.*."""
+"""Tests for eve.llm.prompts.*."""
 
-from eva.llm.prompts import BASE_SYSTEM_PROMPT
+from eve.llm.prompts import BASE_SYSTEM_PROMPT
 
 
 def test_prompt_content() -> None:

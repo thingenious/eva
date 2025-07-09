@@ -3,7 +3,7 @@
 
 """Database module for the application."""
 
-from eva.config import settings
+from eve.config import settings
 
 from ._aiosqlite import AioSqliteDatabaseManager
 from ._base import DatabaseManager

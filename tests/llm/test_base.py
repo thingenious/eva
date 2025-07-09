@@ -7,8 +7,8 @@
 
 import pytest
 
-from eva.llm._base import BaseLLMManager
-from eva.models import LLMResponse
+from eve.llm._base import BaseLLMManager
+from eve.models import LLMResponse
 
 
 def test_get_summary_prompt_new_and_update() -> None:

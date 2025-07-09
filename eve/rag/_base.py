@@ -89,10 +89,10 @@ class BaseRAGManager(RAGManager):
             The extracted text content from the file.
         """
         try:
-            future = asyncio.get_evant_loop().run_in_executor(
+            future = asyncio.get_event_loop().run_in_executor(
                 None, self.extract_text_from_file, file_path
             )
-            await asyncio.sleep(0)  # Yield control to the evant loop
+            await asyncio.sleep(0)  # Yield control to the event loop
             return await future
         except BaseException:
             self.logger.error("Error reading file %s", file_path)

@@ -7,7 +7,7 @@ Production-ready client implementations for different platforms and use cases.
 ### Full-Featured Chat Client
 
 ```javascript
-class evaChatClient {
+class EVEChatClient {
     constructor(apiKey, options = {}) {
         this.apiKey = apiKey;
         this.baseUrl = options.baseUrl || 'ws://localhost:8000';
@@ -23,7 +23,7 @@ class evaChatClient {
         this.messageQueue = [];
         this.responseBuffer = new Map();
         
-        // evant handlers
+        // Event handlers
         this.onConnectionChange = options.onConnectionChange || (() => {});
         this.onMessage = options.onMessage || (() => {});
         this.onError = options.onError || (() => {});
@@ -43,7 +43,7 @@ class evaChatClient {
             const protocols = ['chat', `${this.apiKey}`];
             this.ws = new WebSocket(`${this.baseUrl}/ws`, protocols);
             
-            this.setupevantHandlers();
+            this.setupEventHandlers();
             
             // Wait for connection to open
             await new Promise((resolve, reject) => {
@@ -74,7 +74,7 @@ class evaChatClient {
         }
     }
     
-    setupevantHandlers() {
+    setupEventHandlers() {
         this.ws.onopen = () => {
             this.connectionState = 'connected';
             this.reconnectAttempts = 0;
@@ -84,26 +84,26 @@ class evaChatClient {
             this.processMessageQueue();
         };
         
-        this.ws.onmessage = (evant) => {
+        this.ws.onmessage = (event) => {
             try {
-                const data = JSON.parse(evant.data);
+                const data = JSON.parse(event.data);
                 this.handleMessage(data);
             } catch (error) {
                 this.onError(new Error('Failed to parse message: ' + error.message));
             }
         };
         
-        this.ws.onclose = (evant) => {
+        this.ws.onclose = (event) => {
             this.connectionState = 'disconnected';
             this.onConnectionChange('disconnected');
             
-            if (evant.code === 1008) {
-                this.onError(new Error(`Authentication failed: ${evant.reason}`));
+            if (event.code === 1008) {
+                this.onError(new Error(`Authentication failed: ${event.reason}`));
                 return;
             }
             
             // Auto-reconnect if enabled and not a normal closure
-            if (this.autoReconnect && evant.code !== 1000 && 
+            if (this.autoReconnect && event.code !== 1000 && 
                 this.reconnectAttempts < this.maxReconnectAttempts) {
                 this.scheduleReconnect();
             }
@@ -253,7 +253,7 @@ class evaChatClient {
 
 ```jsx
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { evaChatClient } from './evaChatClient';
+import { EVEChatClient } from './EVEChatClient';
 
 const ChatInterface = ({ apiKey, onError }) => {
     const [client, setClient] = useState(null);
@@ -300,22 +300,22 @@ const ChatInterface = ({ apiKey, onError }) => {
     }, []);
     
     useEffect(() => {
-        const evaClient = new evaChatClient(apiKey, {
+        const eveClient = new EVEChatClient(apiKey, {
             onMessage: handleMessage,
             onConnectionChange: handleConnectionChange,
             onConversationStart: handleConversationStart,
             onError: onError
         });
         
-        setClient(evaClient);
+        setClient(eveClient);
         
         // Auto-connect and start conversation
-        evaClient.connect().then(() => {
-            return evaClient.startConversation();
+        eveClient.connect().then(() => {
+            return eveClient.startConversation();
         }).catch(onError);
         
         return () => {
-            evaClient.disconnect();
+            eveClient.disconnect();
         };
     }, [apiKey, handleMessage, handleConnectionChange, handleConversationStart, onError]);
     
@@ -345,7 +345,7 @@ const ChatInterface = ({ apiKey, onError }) => {
     
     const handleKeyPress = (e) => {
         if (e.key === 'Enter' && !e.shiftKey) {
-            e.prevantDefault();
+            e.preventDefault();
             sendMessage();
         }
     };
@@ -376,7 +376,7 @@ const ChatInterface = ({ apiKey, onError }) => {
     return (
         <div className="chat-interface">
             <div className="chat-header">
-                <h2>eva Chat</h2>
+                <h2>EVE Chat</h2>
                 <div className="connection-status">
                     <span 
                         className="status-indicator"
@@ -677,7 +677,7 @@ class Message:
     metadata: Optional[Dict[str, Any]] = None
     timestamp: Optional[datetime] = None
 
-class evaChatClient:
+class EVEChatClient:
     def __init__(
         self,
         api_key: str,
@@ -702,7 +702,7 @@ class evaChatClient:
         self.message_queue = []
         self.response_buffers = {}
         
-        # evant handlers
+        # Event handlers
         self.message_handlers: List[Callable[[Message], None]] = []
         self.error_handlers: List[Callable[[Exception], None]] = []
         self.connection_handlers: List[Callable[[str], None]] = []
@@ -725,7 +725,7 @@ class evaChatClient:
         self.conversation_start_handlers.append(handler)
     
     async def connect(self):
-        """Connect to the eva WebSocket API"""
+        """Connect to the EVE WebSocket API"""
         if self.connection_state in ["connecting", "connected"]:
             return
         
@@ -748,7 +748,7 @@ class evaChatClient:
             self.connection_state = "connected"
             self.reconnect_attempts = 0
             self._notify_connection_handlers("connected")
-            self.logger.info("Connected to eva WebSocket API")
+            self.logger.info("Connected to EVE WebSocket API")
             
             # Process any queued messages
             await self._process_message_queue()
@@ -979,14 +979,14 @@ class evaChatClient:
 
 
 # Example usage and CLI client
-class evaChatCLI:
+class EVEChatCLI:
     def __init__(self, api_key: str, base_url: str = "ws://localhost:8000"):
-        self.client = evaChatClient(api_key, base_url)
+        self.client = EVEChatClient(api_key, base_url)
         self.current_response = ""
         self.setup_handlers()
     
     def setup_handlers(self):
-        """Setup evant handlers for the CLI"""
+        """Setup event handlers for the CLI"""
         self.client.on_message(self.handle_message)
         self.client.on_error(self.handle_error)
         self.client.on_connection_change(self.handle_connection_change)
@@ -1030,8 +1030,8 @@ class evaChatCLI:
     
     async def run(self):
         """Run the CLI chat interface"""
-        print("🤖 eva Chat CLI")
-        print("Connecting to eva...")
+        print("🤖 EVE Chat CLI")
+        print("Connecting to EVE...")
         
         try:
             # Connect and start conversation
@@ -1044,7 +1044,7 @@ class evaChatCLI:
             # Handle user input
             while True:
                 try:
-                    user_input = await asyncio.get_evant_loop().run_in_executor(
+                    user_input = await asyncio.get_event_loop().run_in_executor(
                         None, input, "You: "
                     )
                     
@@ -1052,7 +1052,7 @@ class evaChatCLI:
                         break
                     
                     if user_input.strip():
-                        print("eva: ", end="", flush=True)
+                        print("EVE: ", end="", flush=True)
                         await self.client.send_message(user_input)
                 
                 except KeyboardInterrupt:
@@ -1075,20 +1075,20 @@ async def main():
     import sys
     
     # Get API key from environment or command line
-    api_key = os.getenv("eva_API_KEY")
+    api_key = os.getenv("EVE_API_KEY")
     if not api_key and len(sys.argv) > 1:
         api_key = sys.argv[1]
     
     if not api_key:
-        print("Please provide API key via eva_API_KEY environment variable or command line argument")
+        print("Please provide API key via EVE_API_KEY environment variable or command line argument")
         sys.exit(1)
     
     # Run CLI
-    cli = evaChatCLI(api_key)
+    cli = EVEChatCLI(api_key)
     await cli.run()
 
 if __name__ == "__main__":
-    logging.basicConfig(leval=logging.INFO)
+    logging.basicConfig(level=logging.INFO)
     asyncio.run(main())
 ```
 
@@ -1098,9 +1098,9 @@ if __name__ == "__main__":
 
 ```javascript
 const WebSocket = require('ws');
-const evantEmitter = require('evants');
+const EventEmitter = require('events');
 
-class evaChatClient extends evantEmitter {
+class EVEChatClient extends EventEmitter {
     constructor(apiKey, options = {}) {
         super();
         this.apiKey = apiKey;
@@ -1133,7 +1133,7 @@ class evaChatClient extends evantEmitter {
             };
             
             this.ws = new WebSocket(`${this.baseUrl}/ws`, { headers });
-            this.setupevantHandlers();
+            this.setupEventHandlers();
             
             // Wait for connection
             await new Promise((resolve, reject) => {
@@ -1164,7 +1164,7 @@ class evaChatClient extends evantEmitter {
         }
     }
     
-    setupevantHandlers() {
+    setupEventHandlers() {
         this.ws.on('open', () => {
             this.connectionState = 'connected';
             this.reconnectAttempts = 0;
@@ -1252,7 +1252,7 @@ class evaChatClient extends evantEmitter {
         
         response.chunks.push(chunk);
         
-        // Emit chunk evant
+        // Emit chunk event
         this.emit('messageChunk', {
             chunk,
             isComplete: data.is_final,
@@ -1330,7 +1330,7 @@ class evaChatClient extends evantEmitter {
     }
 }
 
-module.exports = evaChatClient;
+module.exports = EVEChatClient;
 ```
 
 ### Express.js API Server Example
@@ -1339,7 +1339,7 @@ module.exports = evaChatClient;
 const express = require('express');
 const http = require('http');
 const socketIo = require('socket.io');
-const evaChatClient = require('./evaChatClient');
+const EVEChatClient = require('./EVEChatClient');
 
 const app = express();
 const server = http.createServer(app);
@@ -1353,8 +1353,8 @@ const io = socketIo(server, {
 app.use(express.json());
 app.use(express.static('public'));
 
-// Store active eva clients for each socket
-const evaClients = new Map();
+// Store active EVE clients for each socket
+const eveClients = new Map();
 
 io.on('connection', (socket) => {
     console.log('Client connected:', socket.id);
@@ -1363,33 +1363,33 @@ io.on('connection', (socket) => {
         try {
             const { apiKey } = data;
             
-            // Create eva client for this socket
-            const evaClient = new evaChatClient(apiKey);
+            // Create EVE client for this socket
+            const eveClient = new EVEChatClient(apiKey);
             
-            // Setup evant handlers
-            evaClient.on('connectionChange', (state) => {
+            // Setup event handlers
+            eveClient.on('connectionChange', (state) => {
                 socket.emit('connectionChange', { state });
             });
             
-            evaClient.on('conversationStart', (conversationId) => {
+            eveClient.on('conversationStart', (conversationId) => {
                 socket.emit('conversationStart', { conversationId });
             });
             
-            evaClient.on('messageChunk', (data) => {
+            eveClient.on('messageChunk', (data) => {
                 socket.emit('messageChunk', data);
             });
             
-            evaClient.on('messageComplete', (data) => {
+            eveClient.on('messageComplete', (data) => {
                 socket.emit('messageComplete', data);
             });
             
-            evaClient.on('error', (error) => {
+            eveClient.on('error', (error) => {
                 socket.emit('error', { message: error.message });
             });
             
-            // Connect to eva
-            await evaClient.connect();
-            evaClients.set(socket.id, evaClient);
+            // Connect to EVE
+            await eveClient.connect();
+            eveClients.set(socket.id, eveClient);
             
             socket.emit('authenticated', { success: true });
             
@@ -1402,28 +1402,28 @@ io.on('connection', (socket) => {
     });
     
     socket.on('startConversation', async (data) => {
-        const evaClient = evaClients.get(socket.id);
-        if (!evaClient) {
+        const eveClient = eveClients.get(socket.id);
+        if (!eveClient) {
             socket.emit('error', { message: 'Not authenticated' });
             return;
         }
         
         try {
-            await evaClient.startConversation(data.conversationId);
+            await eveClient.startConversation(data.conversationId);
         } catch (error) {
             socket.emit('error', { message: error.message });
         }
     });
     
     socket.on('sendMessage', async (data) => {
-        const evaClient = evaClients.get(socket.id);
-        if (!evaClient) {
+        const eveClient = eveClients.get(socket.id);
+        if (!eveClient) {
             socket.emit('error', { message: 'Not authenticated' });
             return;
         }
         
         try {
-            await evaClient.sendMessage(data.content);
+            await eveClient.sendMessage(data.content);
         } catch (error) {
             socket.emit('error', { message: error.message });
         }
@@ -1431,10 +1431,10 @@ io.on('connection', (socket) => {
     
     socket.on('disconnect', () => {
         console.log('Client disconnected:', socket.id);
-        const evaClient = evaClients.get(socket.id);
-        if (evaClient) {
-            evaClient.disconnect();
-            evaClients.delete(socket.id);
+        const eveClient = eveClients.get(socket.id);
+        if (eveClient) {
+            eveClient.disconnect();
+            eveClients.delete(socket.id);
         }
     });
 });
@@ -1444,7 +1444,7 @@ app.get('/health', (req, res) => {
     res.json({
         status: 'healthy',
         timestamp: new Date().toISOString(),
-        activeConnections: evaClients.size
+        activeConnections: eveClients.size
     });
 });
 
@@ -1460,17 +1460,17 @@ server.listen(PORT, () => {
 ### Unit Tests (Jest)
 
 ```javascript
-// tests/evaChatClient.test.js
-const evaChatClient = require('../src/evaChatClient');
+// tests/EVEChatClient.test.js
+const EVEChatClient = require('../src/EVEChatClient');
 const WS = require('jest-websocket-mock');
 
-describe('evaChatClient', () => {
+describe('EVEChatClient', () => {
     let server;
     let client;
     
     beforeEach(() => {
         server = new WS('ws://localhost:8000/ws');
-        client = new evaChatClient('test-api-key');
+        client = new EVEChatClient('test-api-key');
     });
     
     afterEach(() => {
@@ -1579,19 +1579,19 @@ describe('evaChatClient', () => {
 
 ```javascript
 // scripts/test-integration.js
-const evaChatClient = require('../src/evaChatClient');
+const EVEChatClient = require('../src/EVEChatClient');
 
-async function testevaIntegration() {
-    const apiKey = process.env.eva_API_KEY;
+async function testEVEIntegration() {
+    const apiKey = process.env.EVE_API_KEY;
     if (!apiKey) {
-        console.error('Please set eva_API_KEY environment variable');
+        console.error('Please set EVE_API_KEY environment variable');
         process.exit(1);
     }
     
-    console.log('🧪 Starting eva integration test...');
+    console.log('🧪 Starting EVE integration test...');
     
-    const client = new evaChatClient(apiKey, {
-        baseUrl: process.env.eva_BASE_URL || 'ws://localhost:8000'
+    const client = new EVEChatClient(apiKey, {
+        baseUrl: process.env.EVE_BASE_URL || 'ws://localhost:8000'
     });
     
     let testsPassed = 0;
@@ -1637,7 +1637,7 @@ async function testevaIntegration() {
             receivedComplete = true;
         });
         
-        await client.sendMessage('Hello eva! This is a test message.');
+        await client.sendMessage('Hello EVE! This is a test message.');
         
         // Wait for response
         await new Promise(resolve => {
@@ -1698,10 +1698,10 @@ async function testevaIntegration() {
 }
 
 if (require.main === module) {
-    testevaIntegration().catch(console.error);
+    testEVEIntegration().catch(console.error);
 }
 
-module.exports = testevaIntegration;
+module.exports = testEVEIntegration;
 ```
 
 ## Mobile Client Examples
@@ -1709,10 +1709,10 @@ module.exports = testevaIntegration;
 ### React Native Client
 
 ```javascript
-// evaChatClient.js for React Native
-import { evantEmitter } from 'evants';
+// EVEChatClient.js for React Native
+import { EventEmitter } from 'events';
 
-class evaChatClientRN extends evantEmitter {
+class EVEChatClientRN extends EventEmitter {
     constructor(apiKey, options = {}) {
         super();
         this.apiKey = apiKey;
@@ -1754,27 +1754,27 @@ class evaChatClientRN extends evantEmitter {
                     resolve();
                 };
                 
-                this.ws.onmessage = (evant) => {
+                this.ws.onmessage = (event) => {
                     try {
-                        const data = JSON.parse(evant.data);
+                        const data = JSON.parse(event.data);
                         this.handleMessage(data);
                     } catch (error) {
                         this.emit('error', new Error(`Failed to parse message: ${error.message}`));
                     }
                 };
                 
-                this.ws.onclose = (evant) => {
+                this.ws.onclose = (event) => {
                     this.connectionState = 'disconnected';
                     this.emit('connectionChange', 'disconnected');
                     
-                    if (evant.code === 1008) {
-                        const error = new Error(`Authentication failed: ${evant.reason}`);
+                    if (event.code === 1008) {
+                        const error = new Error(`Authentication failed: ${event.reason}`);
                         this.emit('error', error);
                         reject(error);
                         return;
                     }
                     
-                    if (this.autoReconnect && evant.code !== 1000 && 
+                    if (this.autoReconnect && event.code !== 1000 && 
                         this.reconnectAttempts < this.maxReconnectAttempts) {
                         this.scheduleReconnect();
                     }
@@ -1843,7 +1843,7 @@ class evaChatClientRN extends evantEmitter {
         
         response.chunks.push(chunk);
         
-        // Emit chunk evant
+        // Emit chunk event
         this.emit('messageChunk', {
             chunk,
             isComplete: data.is_final,
@@ -1943,7 +1943,7 @@ class evaChatClientRN extends evantEmitter {
     }
 }
 
-export default evaChatClientRN;
+export default EVEChatClientRN;
 ```
 
 ### React Native Chat Screen
@@ -1965,7 +1965,7 @@ import {
     StyleSheet
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import evaChatClientRN from '../services/evaChatClient';
+import EVEChatClientRN from '../services/EVEChatClient';
 
 const ChatScreen = ({ apiKey }) => {
     const [client, setClient] = useState(null);
@@ -1977,18 +1977,18 @@ const ChatScreen = ({ apiKey }) => {
     const flatListRef = useRef(null);
     
     useEffect(() => {
-        const evaClient = new evaChatClientRN(apiKey);
+        const eveClient = new EVEChatClientRN(apiKey);
         
-        // Setup evant handlers
-        evaClient.on('connectionChange', (state) => {
+        // Setup event handlers
+        eveClient.on('connectionChange', (state) => {
             setConnectionState(state);
         });
         
-        evaClient.on('conversationStart', (conversationId) => {
+        eveClient.on('conversationStart', (conversationId) => {
             console.log('Conversation started:', conversationId);
         });
         
-        evaClient.on('messageChunk', (data) => {
+        eveClient.on('messageChunk', (data) => {
             setCurrentResponse(prev => prev + data.chunk.content);
             
             if (data.isComplete) {
@@ -2005,22 +2005,22 @@ const ChatScreen = ({ apiKey }) => {
             }
         });
         
-        evaClient.on('error', (error) => {
+        eveClient.on('error', (error) => {
             Alert.alert('Error', error.message);
             setIsResponding(false);
         });
         
-        setClient(evaClient);
+        setClient(eveClient);
         
         // Auto-connect
-        evaClient.connect()
-            .then(() => evaClient.startConversation())
+        eveClient.connect()
+            .then(() => eveClient.startConversation())
             .catch((error) => {
                 Alert.alert('Connection Failed', error.message);
             });
         
         return () => {
-            evaClient.disconnect();
+            eveClient.disconnect();
         };
     }, [apiKey]);
     
@@ -2124,7 +2124,7 @@ const ChatScreen = ({ apiKey }) => {
             
             {/* Header */}
             <View style={styles.header}>
-                <Text style={styles.headerTitle}>eva Chat</Text>
+                <Text style={styles.headerTitle}>EVE Chat</Text>
                 <View style={styles.connectionStatus}>
                     <View style={[
                         styles.statusDot,

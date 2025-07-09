@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0.
 # Copyright (c) 2024 - 2025 Thingenious.
 
-"""Tests for eva.db.postgres.*."""
+"""Tests for eve.db.postgres.*."""
 # pylint: disable=missing-return-doc,missing-param-doc,missing-yield-doc
 # pylint: disable=missing-function-docstring,missing-class-docstring
 
@@ -12,7 +12,7 @@ from testcontainers.postgres import (  # type: ignore[import-untyped]
     PostgresContainer,
 )
 
-from eva.db._postgres import PostgresDatabaseManager
+from eve.db._postgres import PostgresDatabaseManager
 from tests.conftest import is_docker_available
 
 pytestmark = pytest.mark.skipif(
@@ -43,7 +43,7 @@ async def db_manager_fixture(
 
 
 @pytest.mark.asyncio
-async def test_create_and_retrieva_conversation(
+async def test_create_and_retrieve_conversation(
     db_manager: PostgresDatabaseManager,
 ) -> None:
     """Test creating and retrieving a conversation."""

@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0.
 # Copyright (c) 2024 - 2025 Thingenious.
 
-"""Main entry point for the eva application."""
+"""Main entry point for the EVE application."""
 
 # pyright: reportUnusedFunction=false
 # pylint: disable=broad-exception-caught,too-many-try-statements,unused-argument
@@ -21,18 +21,18 @@ from fastapi.middleware.trustedhost import TrustedHostMiddleware
 from fastapi.responses import ORJSONResponse
 from uvicorn.middleware.proxy_headers import ProxyHeadersMiddleware
 
-from eva.auth import extract_ws_token, verify_ws_token
-from eva.config import settings
-from eva.db import DatabaseManager, get_db_manager
-from eva.llm import LLMManager, get_llm_manager
-from eva.llm.prompts import BASE_SYSTEM_PROMPT
-from eva.rag import RAGManager, get_rag_manager
+from eve.auth import extract_ws_token, verify_ws_token
+from eve.config import settings
+from eve.db import DatabaseManager, get_db_manager
+from eve.llm import LLMManager, get_llm_manager
+from eve.llm.prompts import BASE_SYSTEM_PROMPT
+from eve.rag import RAGManager, get_rag_manager
 
 from ._version import __version__
 
 
-class evaApp(FastAPI):
-    """Custom FastAPI application class for eva."""
+class EveApp(FastAPI):
+    """Custom FastAPI application class for EVE."""
 
     db_manager: DatabaseManager
     rag_manager: RAGManager
@@ -40,12 +40,12 @@ class evaApp(FastAPI):
 
 
 @asynccontextmanager
-async def lifespan(application: evaApp) -> AsyncIterator[None]:
+async def lifespan(application: EveApp) -> AsyncIterator[None]:
     """Application lifespan context manager.
 
     Parameters
     ----------
-    application : evaApp
+    application : EveApp
         The FastAPI application
 
     Yields
@@ -67,16 +67,16 @@ async def lifespan(application: evaApp) -> AsyncIterator[None]:
 
 
 class ChatApplication:
-    """Main application class for the eva chat application."""
+    """Main application class for the EVE chat application."""
 
     def __init__(self) -> None:
         self.active_connections: dict[str, WebSocket] = {}
         self.log = logging.getLogger(__name__)
-        self.app = evaApp(
+        self.app = EveApp(
             lifespan=lifespan,
             docs_url="/docs",
             redoc_url=None,
-            title="eva",
+            title="EVE",
             description="Simple chat application using FastAPI",
             version=__version__,
             openapi_url="/openapi.json",
@@ -245,7 +245,7 @@ class ChatApplication:
                 conversation_id, settings.max_history_messages
             )
             self.log.debug(
-                "Retrievad %d messages for conversation %s",
+                "Retrieved %d messages for conversation %s",
                 len(messages),
                 conversation_id,
             )
@@ -459,7 +459,7 @@ class ChatApplication:
             self.log.error("Error creating summary: %s", e)
 
 
-def create_app() -> evaApp:
+def create_app() -> EveApp:
     """Create and configure the FastAPI application.
 
     Returns
@@ -471,27 +471,27 @@ def create_app() -> evaApp:
     return chat_app.app
 
 
-if "--log-leval" in sys.argv:
-    log_leval_index = sys.argv.index("--log-leval") + 1
-    if log_leval_index < len(sys.argv):
-        os.environ["LOG_LevaL"] = sys.argv[log_leval_index]
-        settings.log_leval = sys.argv[log_leval_index]
+if "--log-level" in sys.argv:
+    log_level_index = sys.argv.index("--log-level") + 1
+    if log_level_index < len(sys.argv):
+        os.environ["LOG_LEVEL"] = sys.argv[log_level_index]
+        settings.log_level = sys.argv[log_level_index]
 
 logging.basicConfig(
-    leval=settings.log_leval.upper(),
-    format="%(asctime)s - %(name)s - %(levalname)s - %(message)s",
+    level=settings.log_level.upper(),
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
 )
 
 app = create_app()
 
 
 if __name__ == "__main__":
-    logging.info("Starting eva application version %s", __version__)
+    logging.info("Starting EVE application version %s", __version__)
     uvicorn.run(
-        "eva.main:app",
+        "eve.main:app",
         host=settings.host,
         port=settings.port,
-        log_leval=settings.log_leval,
+        log_level=settings.log_level,
         proxy_headers=True,
         ws_ping_timeout=None,
         server_header=False,
@@ -499,4 +499,4 @@ if __name__ == "__main__":
         forwarded_allow_ips="*",
         ws="wsproto",
     )
-    logging.info("eva application started successfully")
+    logging.info("EVE application started successfully")

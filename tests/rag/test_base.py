@@ -10,7 +10,7 @@ from pathlib import Path
 
 import pytest
 
-from eva.rag._base import BaseRAGManager
+from eve.rag._base import BaseRAGManager
 
 
 @pytest.fixture(name="base_manager")
@@ -174,7 +174,7 @@ def test_extract_text_from_file_loader_exception(
     file = tmp_path / "will_fail.txt"
     file.write_text("fail")
     monkeypatch.setattr(
-        "eva.rag._base.DocumentLoader.load",
+        "eve.rag._base.DocumentLoader.load",
         lambda _: (_ for _ in ()).throw(Exception("fail")),  # pyright: ignore
     )
     result = base_manager.extract_text_from_file(file)
@@ -196,7 +196,7 @@ def test_split_text_breakpoints(
 ) -> None:
     """Test splitting text at breakpoints."""
     # . and \n at various places
-    text = "Sentence. More sentence\nevan more."
+    text = "Sentence. More sentence\nEven more."
     # Should split in a way that finds the period/newline
     result = base_manager.split_text(text, 12, 2)
     assert all(isinstance(chunk, str) for chunk in result)

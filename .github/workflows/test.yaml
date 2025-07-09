@@ -50,7 +50,7 @@ jobs:
       - name: Run tests
         run: |
           pytest -c pyproject.toml \
-            --cov=eva \
+            --cov=eve \
             --cov-branch \
             --cov-report=term-missing:skip-covered \
             --cov-report=lcov:coverage/lcov.info \

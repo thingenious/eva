@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0.
 # Copyright (c) 2024 - 2025 Thingenious.
 
-"""Configuration settings for the eva application using Pydantic."""
+"""Configuration settings for the EVE application using Pydantic."""
 
 # pylint: disable=unused-argument
 import os
@@ -12,7 +12,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
-    """Configuration settings for the eva application."""
+    """Configuration settings for the EVE application."""
 
     # General app config
     chat_api_key: str = "super-secret"
@@ -33,7 +33,7 @@ class Settings(BaseSettings):
 
     # ChromaDB
     chroma_local: bool = True
-    chroma_collection_name: str = "eva_rag"
+    chroma_collection_name: str = "eve_rag"
     chroma_host: str = "localhost"
     chroma_port: int = 8888
     chroma_db_dir: str = "chroma_db"
@@ -46,7 +46,7 @@ class Settings(BaseSettings):
     trusted_hosts: str | list[str] = "*"
 
     # Logging
-    log_leval: str = "info"
+    log_level: str = "info"
 
     @field_validator("trusted_hosts", "trusted_origins", mode="before")
     @classmethod

@@ -5,7 +5,7 @@ requires = [
 ]
 
 [project]
-name = "eva"
+name = "eve"
 authors = [
   { name = "Panagiotis Kasnesis", email = "pkasnesis@thingenious.io" },
   { name= "Lazaros Toumanidis", email= "laztoum@protonmail.com" }
@@ -106,7 +106,7 @@ allow-direct-references = true
 [tool.hatch.envs.default]
 python = "3.13"
 installer = "uv"
-dependencies = ["eva[dev,test]"]
+dependencies = ["eve[dev,test]"]
 
 [tool.hatch.envs.default.scripts]
 pre-test = [
@@ -117,25 +117,25 @@ pre-test = [
 
 test = [
   "hatch run pre-test",
-  "pytest -c pyproject.toml --cov=eva --cov-branch --cov-report=term-missing:skip-covered --cov-report=lcov:coverage/py/lcov.info --cov-report=html:coverage/py/html --cov-report=xml:coverage/py/coverage.xml --junitxml=coverage/py/xunit.xml tests",
+  "pytest -c pyproject.toml --cov=eve --cov-branch --cov-report=term-missing:skip-covered --cov-report=lcov:coverage/py/lcov.info --cov-report=html:coverage/py/html --cov-report=xml:coverage/py/coverage.xml --junitxml=coverage/py/xunit.xml tests",
 ]
 
-format-black = "black --config pyproject.toml eva tests scripts"
-format-autoflake = "autoflake --in-place --remove-all-unused-imports --remove-unused-variables --recursive eva tests scripts"
-format-ruff = "ruff format --config pyproject.toml eva tests scripts"
+format-black = "black --config pyproject.toml eve tests scripts"
+format-autoflake = "autoflake --in-place --remove-all-unused-imports --remove-unused-variables --recursive eve tests scripts"
+format-ruff = "ruff format --config pyproject.toml eve tests scripts"
 format = [
   "hatch run format-black",
   "hatch run format-autoflake",
   "hatch run format-ruff"
 ]
 
-lint-black = "black --config pyproject.toml --check --diff eva tests scripts"
-lint-mypy = "mypy --config pyproject.toml eva tests scripts"
-lint-flake8 = "flake8 --config .flake8 eva tests scripts"
-lint-bandit = "bandit -r -c pyproject.toml eva scripts"
+lint-black = "black --config pyproject.toml --check --diff eve tests scripts"
+lint-mypy = "mypy --config pyproject.toml eve tests scripts"
+lint-flake8 = "flake8 --config .flake8 eve tests scripts"
+lint-bandit = "bandit -r -c pyproject.toml eve scripts"
 lint-yamllint = "yamllint ."
-lint-ruff = "ruff check --config pyproject.toml eva tests scripts"
-lint-pylint = "pylint --rcfile=pyproject.toml eva tests scripts"
+lint-ruff = "ruff check --config pyproject.toml eve tests scripts"
+lint-pylint = "pylint --rcfile=pyproject.toml eve tests scripts"
 lint = [
   "hatch run lint-black",
   "hatch run lint-mypy",
@@ -152,7 +152,7 @@ forlint = [
 ]
 
 docs = "python -m mkdocs build -d site"
-docs-live = "python -m mkdocs serve --watch mkdocs.yml --watch docs --watch eva --dev-addr localhost:8400"
+docs-live = "python -m mkdocs serve --watch mkdocs.yml --watch docs --watch eve --dev-addr localhost:8400"
 
 
 [tool.hatch.envs.test]
@@ -216,7 +216,7 @@ warn_unused_configs = true
 warn_unused_ignores = true
 
 [[tool.mypy.overrides]]
-module = "eva.tests.*"
+module = "eve.tests.*"
 # with python < 3.13 we get seem to get "call-arg" errors :(
 # and with python>=3.13 "unused-ignore" : (
 disable_error_code = ["call-arg"]

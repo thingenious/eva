@@ -4,7 +4,7 @@
 """Test cases for ChromaLocalRAGManager implementation."""
 
 # pylint: disable=missing-return-doc,missing-param-doc,missing-yield-doc
-# pylint: disable=missing-function-docstring,import-outside-topleval
+# pylint: disable=missing-function-docstring,import-outside-toplevel
 # pyright: reportUnknownArgumentType=false,reportUnknownLambdaType=false
 # pyright: reportUnknownVariableType=false
 import os
@@ -12,7 +12,7 @@ from pathlib import Path
 
 import pytest
 
-from eva.rag._chroma_local import ChromaLocalRAGManager
+from eve.rag._chroma_local import ChromaLocalRAGManager
 
 
 @pytest.fixture(name="chroma_manager")

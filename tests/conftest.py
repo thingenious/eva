@@ -85,7 +85,7 @@ def _create_test_env_file(env_file: Path) -> None:
     with open(env_file, "w", encoding="utf-8") as f:
         f.write("CHAT_API_KEY=super-secret\n")
         f.write("DATABASE_URL=sqlite:///test.db\n")
-        f.write("LOG_LevaL=info\n")
+        f.write("LOG_LEVEL=info\n")
 
 
 def pytest_unconfigure(config: pytest.Config) -> None:

@@ -9,12 +9,12 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
-from eva.llm._openai import OpenAILLMManager
-from eva.models import ChatMessage
+from eve.llm._openai import OpenAILLMManager
+from eve.models import ChatMessage
 
 
 @pytest.mark.asyncio
-@patch("eva.llm._openai.openai")
+@patch("eve.llm._openai.openai")
 async def test_openai_manager_parses_json(mock_openai: AsyncMock) -> None:
     """Test that the OpenAI LLM manager correctly parses JSON responses."""
     # Build a mock response object with output_text as the LLM's JSON string
@@ -43,7 +43,7 @@ async def test_openai_manager_parses_json(mock_openai: AsyncMock) -> None:
 
 
 @pytest.mark.asyncio
-@patch("eva.llm._openai.openai")
+@patch("eve.llm._openai.openai")
 async def test_openai_generate_response_error(mock_openai: AsyncMock) -> None:
     """Test that OpenAI LLM manager handles errors gracefully."""
     mock_client = AsyncMock()
@@ -58,7 +58,7 @@ async def test_openai_generate_response_error(mock_openai: AsyncMock) -> None:
 
 
 @pytest.mark.asyncio
-@patch("eva.llm._openai.openai")
+@patch("eve.llm._openai.openai")
 async def test_openai_summarize_conversation(mock_openai: AsyncMock) -> None:
     """Test that OpenAI LLM manager summarizes conversation correctly."""
     # Simulate OpenAI returning a summary string
@@ -75,7 +75,7 @@ async def test_openai_summarize_conversation(mock_openai: AsyncMock) -> None:
 
 
 @pytest.mark.asyncio
-@patch("eva.llm._openai.openai")
+@patch("eve.llm._openai.openai")
 async def test_openai_summarize_conversation_error(
     mock_openai: AsyncMock,
 ) -> None:

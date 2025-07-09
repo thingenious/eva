@@ -1,165 +1,111 @@
 # SPDX-License-Identifier: Apache-2.0.
 # Copyright (c) 2024 - 2025 Thingenious.
 
-"""ChromaDB local RAG Manager implementation."""
+"""ChromaDB RAG Manager for handling document storage and retrieval."""
 
-# pylint: disable=too-many-try-statements,broad-exception-caught,duplicate-code
-import asyncio
 import uuid as uuid_lib
 from pathlib import Path
 from typing import Any, Optional
 
-import chromadb
 import chromadb.utils.embedding_functions as ef
-from chromadb.api import ClientAPI
-from chromadb.api.models.Collection import Collection  # pyright: ignore
-from chromadb.api.types import EmbeddingFunction, Metadata
+from chromadb.api.async_client import AsyncClient
+from chromadb.api.models.AsyncCollection import (  # pyright: ignore
+    AsyncCollection,
+)
+from chromadb.api.types import Metadata
 from chromadb.config import Settings
 
 from ._base import BaseRAGManager
 
 
-class ChromaLocalRAGManager(BaseRAGManager):
-    """ChromaDB local RAG Manager implementation."""
+# pylint: disable=too-many-instance-attributes,too-many-locals,duplicate-code
+class ChromaRemoteRAGManager(BaseRAGManager):  # pragma: no cover
+    """ChromaDB remote RAG Manager implementation."""
 
     def __init__(
         self,
-        local: bool = True,
-        persist_directory: str = "chroma_db",
-        collection_name: str = "eva_rag",
-        documents_root: str = "documents",
+        host: str = "localhost",
+        port: int = 8000,
+        collection_name: str = "eve_rag",
+        model_name: str = "all-MiniLM-L6-v2",
         chunk_size: int = 1000,
         chunk_overlap: int = 200,
+        use_ssl: bool = False,
+        documents_root: str = "documents",
     ):
         super().__init__()
-        self.local = local
-        self.persist_directory = persist_directory
+        self.host = host
+        self.port = port
         self.collection_name = collection_name
         self.documents_root = documents_root
+        self.model_name = model_name
         self.chunk_size = chunk_size
         self.chunk_overlap = chunk_overlap
-        self.collection: Optional[Collection] = None
-        self.embedding_function: Optional[EmbeddingFunction[Any]] = None
-        self.client: Optional[ClientAPI] = None
+        self.use_ssl = use_ssl
+        self.collection: Optional[AsyncCollection] = None
+        self.embedding_function: Optional[ef.EmbeddingFunction[Any]] = None
+        self.client: Optional[AsyncClient] = None
 
     async def initialize(self) -> None:
-        """Initialize ChromaDB client and collection.
+        """Initialize ChromaDB async client and collection.
 
         Raises
         ------
         RuntimeError
-            If the ChromaDB client fails to initialize
-            or collection creation fails.
+            If the initialization fails due to
+            connection issues or collection creation errors.
         """
+        # pylint: disable=too-many-try-statements,broad-exception-caught
         try:
-            # Initialize ChromaDB client
-            self.client, self.collection, self.embedding_function = (
-                self._initialize(
-                    persist_directory=self.persist_directory,
-                    collection_name=self.collection_name,
-                )
-            )
-            await self.load_documents(self.documents_root)
-        except Exception as e:  # pragma: no cover
-            raise RuntimeError(f"Failed to initialize ChromaDB: {e}") from e
-
-    async def search(
-        self, query: str, n_results: int = 3
-    ) -> list[dict[str, Any]]:
-        """Asynchronous search method.
-
-        Parameters
-        ----------
-        query : str
-            The query string to search for.
-        n_results : int, optional
-            Number of results to return, by default 3.
-
-        Returns
-        -------
-        list[dict[str, Any]]
-            List of search results with metadata.
-        """
-        results = await asyncio.get_evant_loop().run_in_executor(
-            None, self._search, query, n_results
-        )
-        return results
-
-    async def load_documents(self, documents_path: str) -> None:
-        """Asynchronously load documents into ChromaDB.
-
-        Parameters
-        ----------
-        documents_path : str
-            Path to the directory containing documents to load.
-
-        Raises
-        ------
-        RuntimeError
-            If loading documents fails.
-        """
-        await asyncio.get_evant_loop().run_in_executor(
-            None, self._load_documents, documents_path
-        )
-
-    # pylint: disable=no-self-use
-    def _initialize(
-        self,
-        persist_directory: str,
-        collection_name: str,
-    ) -> tuple[ClientAPI, Collection, EmbeddingFunction[Any]]:
-        """Initialize ChromaDB client and collection.
-
-        Parameters
-        ----------
-        persist_directory : str
-            Directory to persist the ChromaDB database.
-        collection_name : str
-            Name of the collection to create or access.
-
-        Returns
-        -------
-        tuple[ClientAPI, Collection, EmbeddingFunction[Any]]
-            Tuple containing the ChromaDB client,
-            the collection, and the embedding function.
-
-        Raises
-        ------
-        RuntimeError
-            If the ChromaDB client fails to initialize
-            or collection creation fails.
-        """
-        try:
-            # Initialize ChromaDB client
-            settings = Settings(
-                is_persistent=True,
-                persist_directory=persist_directory,
-                allow_reset=True,
-                anonymized_telemetry=False,
-            )
-            client = chromadb.Client(settings=settings)
+            # Initialize embedding function
             embedding_function = ef.SentenceTransformerEmbeddingFunction(
-                model_name="all-MiniLM-L6-v2",
+                self.model_name
             )
+            self.embedding_function = embedding_function
+            protocol = "https" if self.use_ssl else "http"
+            settings = Settings(
+                anonymized_telemetry=False,
+                chroma_server_host=f"{protocol}://{self.host}",
+                chroma_server_http_port=self.port,
+                chroma_server_ssl_enabled=self.use_ssl,
+                chroma_server_ssl_verify=False,
+            )
+            self.client = await AsyncClient.create(
+                settings=settings,
+            )
+            # Get or create collection
             try:
-                collection = client.get_collection(
-                    collection_name,
+                self.collection = await self.client.get_collection(
+                    name=self.collection_name,
                     embedding_function=embedding_function,  # type: ignore
+                )
+                self.logger.info(
+                    "Using existing collection: %s", self.collection_name
                 )
             except Exception:
-                collection = client.create_collection(
-                    name=collection_name,
+                # Collection doesn't exist, create it
+                self.collection = await self.client.create_collection(
+                    name=self.collection_name,
                     embedding_function=embedding_function,  # type: ignore
+                    metadata={"hnsw:space": "cosine"},
+                )
+                self.logger.info(
+                    "Created new collection: %s",
+                    self.collection_name,
                 )
 
-            # Create collection if it doesn't exist
-        except Exception as e:  # pragma: no cover
-            raise RuntimeError(f"Failed to initialize ChromaDB: {e}") from e
-        return client, collection, embedding_function
+            self.logger.info(
+                "ChromaDB RAG Manager initialized with async HTTP client"
+            )
 
-    # pylint: disable=too-many-locals
-    def _load_documents(self, documents_path: str) -> None:
-        """Load documents into ChromaDB.
+        except Exception as e:
+            self.logger.error("Failed to initialize ChromaDB: %s", e)
+            raise RuntimeError(
+                "Failed to initialize ChromaDB RAG Manager"
+            ) from e
+
+    async def load_documents(self, documents_path: str) -> None:
+        """Load documents into ChromaDB asynchronously.
 
         Parameters
         ----------
@@ -169,7 +115,7 @@ class ChromaLocalRAGManager(BaseRAGManager):
         Raises
         ------
         RuntimeError
-            If loading documents fails.
+            If the RAGManager is not initialized or no documents are found.
         """
         if not self.collection:
             raise RuntimeError(
@@ -184,8 +130,8 @@ class ChromaLocalRAGManager(BaseRAGManager):
         ids: list[str] = []
 
         for file_path in files:
-            content = self.extract_text_from_file(file_path)
-            if content:  # pragma: no branch
+            content = await self.a_extract_text_from_file(file_path)
+            if content:
                 chunks = self.split_text(
                     content, self.chunk_size, self.chunk_overlap
                 )
@@ -213,7 +159,7 @@ class ChromaLocalRAGManager(BaseRAGManager):
                 batch_docs = documents[i : i + batch_size]
                 batch_metas = metadatas[i : i + batch_size]
                 batch_ids = ids[i : i + batch_size]
-                self.collection.add(
+                await self.collection.add(
                     documents=batch_docs,
                     metadatas=batch_metas,
                     ids=batch_ids,
@@ -231,20 +177,23 @@ class ChromaLocalRAGManager(BaseRAGManager):
         else:
             self.logger.warning("No documents found to load")
 
-    def _search(self, query: str, n_results: int = 3) -> list[dict[str, Any]]:
-        """Search using ChromaDB vector search.
+    async def search(
+        self, query: str, n_results: int = 3
+    ) -> list[dict[str, Any]]:
+        """Search ChromaDB asynchronously.
 
         Parameters
         ----------
         query : str
             The query string to search for.
         n_results : int, optional
-            Number of results to return, by default 3.
+            The number of results to return, by default 3.
 
         Returns
         -------
         list[dict[str, Any]]
-            List of search results with metadata.
+            A list of dictionaries containing search results with content,
+            metadata, score, and id.
 
         Raises
         ------
@@ -256,7 +205,7 @@ class ChromaLocalRAGManager(BaseRAGManager):
                 "RAGManager not initialized. Call initialize() first."
             )
 
-        results = self.collection.query(
+        results = await self.collection.query(
             query_texts=[query],
             n_results=n_results,
             include=["documents", "metadatas", "distances"],
@@ -288,3 +237,38 @@ class ChromaLocalRAGManager(BaseRAGManager):
                 )
 
         return formatted_results
+
+    async def delete_collection(self) -> None:
+        """Delete the collection."""
+        if self.client and self.collection:
+            await self.client.delete_collection(name=self.collection_name)
+            self.logger.info("Deleted collection: %s", self.collection_name)
+
+    async def get_collection_info(self) -> dict[str, Any]:
+        """Get collection statistics.
+
+        Returns
+        -------
+        dict[str, Any]
+            A dictionary containing collection name, count of documents,
+            and embedding model name.
+
+        Raises
+        ------
+        RuntimeError
+            If the RAGManager is not initialized or the collection is not set.
+        """
+        if not self.collection:
+            raise RuntimeError(
+                "RAGManager not initialized. Call initialize() first."
+            )
+        if not self.client:
+            raise RuntimeError(
+                "ChromaDB client not initialized. Call initialize() first."
+            )
+        count = await self.collection.count()
+        return {
+            "name": self.collection_name,
+            "count": count,
+            "embedding_model": self.model_name,
+        }
