@@ -14,7 +14,6 @@ from eve.config import settings
 from eve.models import ChatMessage
 
 from ._base import BaseLLMManager
-from .prompts import BASE_SYSTEM_PROMPT
 
 
 class OpenAILLMManager(BaseLLMManager):
@@ -60,15 +59,7 @@ class OpenAILLMManager(BaseLLMManager):
         """
 
         async def _response_generator() -> AsyncIterator[ChatMessage]:
-            """Generate and yield response messages."""
-            system_prompt = BASE_SYSTEM_PROMPT
-            if rag_context:  # pragma: no cover
-                system_prompt += (
-                    f"\n\nRelevant context from documents:\n{rag_context}"
-                )
-            formatted_messages: ResponseInputParam = [
-                {"role": "system", "content": system_prompt}
-            ]
+            formatted_messages: ResponseInputParam = []
             for message in messages:
                 role = message.get("role", "user").lower()
                 content = message.get("content", "")
@@ -92,7 +83,12 @@ class OpenAILLMManager(BaseLLMManager):
                 for entry in self.get_chat_message(response_text):
                     yield entry
                     if not entry.is_final:  # pragma: no cover
-                        await asyncio.sleep(0.3)
+                        try:
+                            await asyncio.sleep(0.3)
+                        except asyncio.CancelledError:
+                            break
+            except GeneratorExit:
+                return
             except Exception as e:  # pragma: no cover
                 self.logger.error("OpenAI API error: %s", e)
                 yield ChatMessage(

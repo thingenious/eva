@@ -6,7 +6,7 @@
 # pylint: disable=line-too-long
 # fmt: off
 
-BASE_SYSTEM_PROMPT = """You are a helpful AI assistant. Please structure your response as a JSON object with the following format:
+BASE_SYSTEM_PROMPT = """You are Eva, the empathetic AI assistant of the master program in AIDL. Please structure your response as a JSON object with the following format:
 
 {
   "segments": [

@@ -25,6 +25,7 @@ from eve.auth import extract_ws_token, verify_ws_token
 from eve.config import settings
 from eve.db import DatabaseManager, get_db_manager
 from eve.llm import LLMManager, get_llm_manager
+from eve.llm.prompts import BASE_SYSTEM_PROMPT
 from eve.rag import RAGManager, get_rag_manager
 
 from ._version import __version__
@@ -205,8 +206,8 @@ class ChatApplication:
                     "Error sending error message to client: %s", send_error
                 )
 
-    # pylint: disable=too-many-arguments,too-many-locals
-    async def process_user_message(
+    # pylint: disable=too-many-arguments,too-many-locals, too-complex
+    async def process_user_message(  # noqa: C901
         self, websocket: WebSocket, conversation_id: str, user_message: str
     ) -> None:
         """Process user message and generate response.
@@ -277,36 +278,77 @@ class ChatApplication:
             )
             rag_context = "\n".join([doc["content"] for doc in rag_results])
 
-            # Prepare messages for LLM
+            system_prompt_parts = [BASE_SYSTEM_PROMPT]
+
+            # Summary (if available)
+            latest_summary = await self.app.db_manager.get_latest_summary(
+                conversation_id
+            )
+            summary = (latest_summary or {}).get("summary") or ""
+            if isinstance(summary, str) and summary.strip():
+                system_prompt_parts.append(
+                    f"Previous conversation summary:\n{summary.strip()}"
+                )
+
+            # RAG context
+            if rag_context.strip():
+                system_prompt_parts.append(
+                    f"Relevant context from documents:\n{rag_context.strip()}"
+                )
+
+            # Final system prompt
+            full_system_prompt = "\n\n".join(system_prompt_parts)
+
+            # Build full message list for LLM
             llm_messages: list[dict[str, Any]] = [
-                {"role": msg["role"], "content": msg["content"]}
-                for msg in messages
+                {"role": "system", "content": full_system_prompt},
+                *[
+                    {"role": msg["role"], "content": msg["content"]}
+                    for msg in messages
+                    if msg["role"]
+                    != "system"  # Avoid accidental double system prompts
+                ],
             ]
 
             # Generate and stream response
             response_chunks: list[str] = []
             sources = [doc["id"] for doc in rag_results] if rag_results else []
 
-            async for chunk in await self.app.llm_manager.generate_response(
-                llm_messages, rag_context
-            ):
-                chunk_data = chunk.model_dump(mode="json")
-                chunk_data["metadata"] = {
-                    "conversation_id": conversation_id,
-                    "timestamp": datetime.now(tz=timezone.utc)
-                    .isoformat(timespec="milliseconds")
-                    .replace("+00:00", "Z"),
-                    "sources": sources,
-                }
-
-                await websocket.send_json(chunk_data)
-                response_chunks.append(chunk.content)
-
-            # Save complete response
-            complete_response = " ".join(response_chunks)
-            await self.app.db_manager.save_message(
-                conversation_id, "assistant", complete_response, sources=sources
-            )
+            try:
+                async for chunk in await self.app.llm_manager.generate_response(
+                    llm_messages, rag_context
+                ):
+                    chunk_data = chunk.model_dump(mode="json")
+                    chunk_data["metadata"] = {
+                        "conversation_id": conversation_id,
+                        "timestamp": datetime.now(tz=timezone.utc)
+                        .isoformat(timespec="milliseconds")
+                        .replace("+00:00", "Z"),
+                        "sources": sources,
+                    }
+                    try:
+                        await websocket.send_json(chunk_data)
+                        response_chunks.append(chunk.content)
+                    except (WebSocketDisconnect, Exception):
+                        # Client disconnected during streaming - exit gracefully
+                        self.log.debug(
+                            "Client disconnected during response streaming"
+                        )
+                        return
+            except Exception as stream_error:
+                self.log.error(
+                    "Error during response streaming: %s", stream_error
+                )
+                return
+            if response_chunks:
+                # Save complete response
+                complete_response = " ".join(response_chunks)
+                await self.app.db_manager.save_message(
+                    conversation_id,
+                    "assistant",
+                    complete_response,
+                    sources=sources,
+                )
 
         except Exception as e:
             self.log.error("Error processing message: %s", e)
