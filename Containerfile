@@ -22,7 +22,7 @@ RUN adduser --disabled-password --gecos ''  --uid ${USER_ID} --gid ${GROUP_ID} u
     mkdir -p /app && chown -R user:user /app
 
 # Copy application code
-COPY --chown=user:user eve /app/eve
+COPY --chown=user:user eva /app/eva
 
 USER user
 
@@ -33,4 +33,4 @@ RUN mkdir -p /app/documents /app/chroma_db /app/logs
 EXPOSE 8000
 ENV PORT=8000
 # Run the application
-CMD ["python", "-m", "eve.main"]
+CMD ["python", "-m", "eva.main"]
