@@ -510,28 +510,28 @@
                 this.websocket = null;
                 this.conversationId = null;
                 this.isConnected = false;
-                this.setupEventListeners();
+                this.setupevantListeners();
             }
 
-            setupEventListeners() {
+            setupevantListeners() {
                 // Auto-resize textarea
                 const messageInput = document.getElementById('messageInput');
-                messageInput.addEventListener('input', () => {
+                messageInput.addevantListener('input', () => {
                     messageInput.style.height = 'auto';
                     messageInput.style.height = Math.min(messageInput.scrollHeight, 120) + 'px';
                 });
 
                 // Send on Enter (but allow Shift+Enter for new lines)
-                messageInput.addEventListener('keydown', (e) => {
+                messageInput.addevantListener('keydown', (e) => {
                     if (e.key === 'Enter' && !e.shiftKey) {
-                        e.preventDefault();
+                        e.prevantDefault();
                         this.sendMessage();
                     }
                 });
 
                 // Show/hide password
                 const apiKeyInput = document.getElementById('apiKey');
-                apiKeyInput.addEventListener('dblclick', () => {
+                apiKeyInput.addevantListener('dblclick', () => {
                     apiKeyInput.type = apiKeyInput.type === 'password' ? 'text' : 'password';
                 });
             }
@@ -562,7 +562,7 @@
                     this.websocket = new WebSocket(serverUrl, ["chat", `${apiKey}`]);
 
                     this.websocket.onopen = () => this.onConnected();
-                    this.websocket.onmessage = (event) => this.onMessage(JSON.parse(event.data));
+                    this.websocket.onmessage = (evant) => this.onMessage(JSON.parse(evant.data));
                     this.websocket.onclose = () => this.onDisconnected();
                     this.websocket.onerror = (error) => this.onError(error);
 
@@ -822,7 +822,7 @@
         }
 
         // Initialize when page loads
-        document.addEventListener('DOMContentLoaded', init);
+        document.addevantListener('DOMContentLoaded', init);
     </script>
 </body>
 </html>

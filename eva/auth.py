@@ -7,7 +7,7 @@ import logging
 
 from fastapi import WebSocket
 
-from eve.config import settings
+from eva.config import settings
 
 logger = logging.getLogger(__name__)
 

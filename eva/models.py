@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0.
 # Copyright (c) 2024 - 2025 Thingenious.
 
-"""Models for Eve's chat system."""
+"""Models for eva's chat system."""
 
 import uuid
 from datetime import datetime

@@ -150,14 +150,14 @@ class PostgresDatabaseManager(DatabaseManager):
     async def get_conversation_messages(
         self, conversation_id: str, limit: int = 50
     ) -> list[dict[str, Any]]:
-        """Retrieve messages from a conversation.
+        """Retrieva messages from a conversation.
 
         Parameters
         ----------
         conversation_id : str
-            The ID of the conversation to retrieve messages from.
+            The ID of the conversation to retrieva messages from.
         limit : int, optional
-            The maximum number of messages to retrieve (default is 50).
+            The maximum number of messages to retrieva (default is 50).
 
         Returns
         -------
@@ -193,7 +193,7 @@ class PostgresDatabaseManager(DatabaseManager):
                         "sources": row[3] if row[3] else [],
                         "created_at": row[4].isoformat() if row[4] else None,
                     }
-                    for row in reversed(rows)
+                    for row in revarsed(rows)
                 ]
 
     async def save_summary(
@@ -236,12 +236,12 @@ class PostgresDatabaseManager(DatabaseManager):
     async def get_latest_summary(
         self, conversation_id: str
     ) -> Optional[dict[str, Any]]:
-        """Retrieve the latest summary for a conversation.
+        """Retrieva the latest summary for a conversation.
 
         Parameters
         ----------
         conversation_id : str
-            The ID of the conversation for which to retrieve the latest summary.
+            The ID of the conversation for which to retrieva the latest summary.
 
         Returns
         -------

@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0.
 # Copyright (c) 2024 - 2025 Thingenious.
 
-"""EVE package initialization."""
+"""eva package initialization."""
 
 import os
 

@@ -10,7 +10,7 @@ from typing import AsyncGenerator
 
 import pytest
 
-from eve.db._aiosqlite import AioSqliteDatabaseManager
+from eva.db._aiosqlite import AioSqliteDatabaseManager
 
 
 @pytest.fixture(name="db_file")
@@ -34,13 +34,13 @@ async def db_manager_fixture(
 
 
 @pytest.mark.asyncio
-async def test_create_and_retrieve_conversation(
+async def test_create_and_retrieva_conversation(
     db_manager: AioSqliteDatabaseManager,
 ) -> None:
     """Test creating and retrieving a conversation."""
     conversation_id = await db_manager.create_conversation()
     assert isinstance(conversation_id, str)
-    # Insert and retrieve messages
+    # Insert and retrieva messages
     await db_manager.save_message(conversation_id, "user", "Hello!", "happy")
     msgs = await db_manager.get_conversation_messages(conversation_id)
     assert len(msgs) == 1

@@ -1,6 +1,6 @@
 # API Reference
 
-Complete technical reference for the EVE WebSocket Chat API.
+Complete technical reference for the eva WebSocket Chat API.
 
 ## Message Schema
 
@@ -141,7 +141,7 @@ Response segments include emotional context to enhance user experience:
 | Emotion | Description | Typical Usage |
 |---------|-------------|---------------|
 | `neutral` | Standard, informational tone | Facts, explanations, general responses |
-| `happy` | Positive, encouraging tone | Good news, achievements, positive feedback |
+| `happy` | Positive, encouraging tone | Good news, achievaments, positive feedback |
 | `excited` | Enthusiastic, energetic | Discoveries, breakthroughs, celebrations |
 | `thoughtful` | Analytical, contemplative | Analysis, considerations, deep thinking |
 | `curious` | Questioning, exploring | Questions, investigations, expressing wonder |
@@ -191,7 +191,7 @@ The server attempts authentication in this order:
 
 ### Automatic Document Retrieval
 
-EVE automatically searches relevant documents based on user messages:
+eva automatically searches relevant documents based on user messages:
 
 - **Context-aware**: Searches are based on message content and conversation history
 - **Source attribution**: All sources are listed in `metadata.sources`
@@ -317,15 +317,15 @@ RAG_DOCS_FOLDER=./documents
 # Server Configuration
 HOST=0.0.0.0
 PORT=8000
-LOG_LEVEL=info
+LOG_LevaL=info
 
 # Conversation Management
 MAX_HISTORY_MESSAGES=50
 SUMMARY_THRESHOLD=30
 
 # Database Configuration
-DATABASE_URL=sqlite:///eve.db
-# DATABASE_URL=postgresql://user:password@localhost:5432/evedb
+DATABASE_URL=sqlite:///eva.db
+# DATABASE_URL=postgresql://user:password@localhost:5432/evadb
 
 # Security
 TRUSTED_HOSTS=localhost,127.0.0.1,your-domain.com
@@ -342,18 +342,18 @@ MAX_MESSAGE_LENGTH=4096
 ```yaml
 version: '3.8'
 services:
-  eve-chat:
-    image: eve-chat-api:latest
+  eva-chat:
+    image: eva-chat-api:latest
     ports:
       - "8000:8000"
     environment:
       - CHAT_API_KEY=${CHAT_API_KEY}
       - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
-      - DATABASE_URL=postgresql://postgres:password@postgres:5432/evedb
+      - DATABASE_URL=postgresql://postgres:password@postgres:5432/evadb
       - RAG_DOCS_FOLDER=/app/documents
     volumes:
       - ./documents:/app/documents:ro
-      - eve_data:/app/data
+      - eva_data:/app/data
     depends_on:
       - postgres
     restart: unless-stopped
@@ -361,7 +361,7 @@ services:
   postgres:
     image: postgres:15
     environment:
-      - POSTGRES_DB=evedb
+      - POSTGRES_DB=evadb
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=password
     volumes:
@@ -369,7 +369,7 @@ services:
     restart: unless-stopped
 
 volumes:
-  eve_data:
+  eva_data:
   postgres_data:
 ```
 
@@ -377,7 +377,7 @@ volumes:
 
 ### API Key Management
 
-- **Environment Variables**: Store keys in environment variables, never in code
+- **Environment Variables**: Store keys in environment variables, nevar in code
 - **Rotation**: Regularly rotate API keys
 - **Scope**: Use separate keys for different environments (dev/staging/prod)
 - **Monitoring**: Monitor API key usage for unusual patterns
@@ -415,28 +415,28 @@ stateDiagram-v2
     Disconnected --> [*]
 ```
 
-### Connection Events
+### Connection evants
 
 ```javascript
-// Connection event handling
-ws.onopen = function(event) {
+// Connection evant handling
+ws.onopen = function(evant) {
     console.log('WebSocket connection opened');
     // Connection established, ready to start conversation
 };
 
-ws.onclose = function(event) {
-    switch(event.code) {
+ws.onclose = function(evant) {
+    switch(evant.code) {
         case 1000: // Normal closure
             console.log('Connection closed normally');
             break;
         case 1008: // Policy violation (auth failed)
-            console.error('Authentication failed:', event.reason);
+            console.error('Authentication failed:', evant.reason);
             break;
         case 1011: // Internal error
-            console.error('Server error:', event.reason);
+            console.error('Server error:', evant.reason);
             break;
         default:
-            console.warn('Connection closed unexpectedly:', event.code, event.reason);
+            console.warn('Connection closed unexpectedly:', evant.code, evant.reason);
     }
 };
 
@@ -524,7 +524,7 @@ setInterval(() => {
         // Or send a custom heartbeat message
         ws.send(JSON.stringify({type: 'ping'}));
     }
-}, 30000); // Every 30 seconds
+}, 30000); // evary 30 seconds
 ```
 
 ### Logging & Metrics
@@ -538,7 +538,7 @@ Key metrics to monitor:
 - **Conversation Length**: Average messages per conversation
 - **RAG Hit Rate**: Percentage of responses using document context
 
-## Testing & Development
+## Testing & Devalopment
 
 ### Testing Tools
 
@@ -563,14 +563,14 @@ Both tools support WebSocket testing with:
 - Response validation
 - Connection management
 
-### Development Environment
+### Devalopment Environment
 
 #### Local Setup
 
 ```shell
 # Clone repository
-git clone https://github.com/thingenious/eve.git
-cd eve
+git clone https://github.com/thingenious/eva.git
+cd eva
 
 # Install dependencies
 pip install -r requirements/all.txt
@@ -579,12 +579,12 @@ pip install -r requirements/all.txt
 export CHAT_API_KEY=dev-test-key-12345
 export ANTHROPIC_API_KEY=your-anthropic-key
 export RAG_DOCS_FOLDER=./test_documents
-export DATABASE_URL=sqlite:///dev_eve.db
+export DATABASE_URL=sqlite:///dev_eva.db
 
-# Run development server
-python -m eve.main --host 0.0.0.0 --port 8000
+# Run devalopment server
+python -m eva.main --host 0.0.0.0 --port 8000
 # or:
-python -m uvicorn eve.main:app --reload --host 0.0.0.0 --port 8000
+python -m uvicorn eva.main:app --reload --host 0.0.0.0 --port 8000
 ```
 
 #### Test Documents
@@ -652,8 +652,8 @@ ws.onopen = function() {
     ws.send(JSON.stringify({type: 'start_conversation'}));
 };
 
-ws.onmessage = function(event) {
-    const data = JSON.parse(event.data);
+ws.onmessage = function(evant) {
+    const data = JSON.parse(evant.data);
     
     if (data.type === 'conversation_started') {
         // 2. Only send messages after conversation started
@@ -681,8 +681,8 @@ ws.onmessage = function(event) {
 let responseBuffer = [];
 let currentChunkId = null;
 
-ws.onmessage = function(event) {
-    const data = JSON.parse(event.data);
+ws.onmessage = function(evant) {
+    const data = JSON.parse(evant.data);
     
     if (data.type === 'message') {
         // Buffer all chunks
@@ -741,4 +741,4 @@ ws.onmessage = function(event) {
 
 ---
 
-*This API reference is for EVE WebSocket Chat API v1.0. For the latest updates and changes, check the changelog or contact support.*
+*This API reference is for eva WebSocket Chat API v1.0. For the latest updates and changes, check the changelog or contact support.*

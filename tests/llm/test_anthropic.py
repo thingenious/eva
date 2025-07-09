@@ -9,12 +9,12 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
-from eve.llm._anthropic import AnthropicLLMManager
-from eve.models import ChatMessage
+from eva.llm._anthropic import AnthropicLLMManager
+from eva.models import ChatMessage
 
 
 @pytest.mark.asyncio
-@patch("eve.llm._anthropic.AsyncAnthropic")
+@patch("eva.llm._anthropic.AsyncAnthropic")
 async def test_anthropic_manager_parses_json(mock_anthropic: AsyncMock) -> None:
     """Test that the Anthropic LLM manager correctly parses JSON responses."""
     # Simulate Anthropic client
@@ -38,7 +38,7 @@ async def test_anthropic_manager_parses_json(mock_anthropic: AsyncMock) -> None:
 
 
 @pytest.mark.asyncio
-@patch("eve.llm._anthropic.AsyncAnthropic")
+@patch("eva.llm._anthropic.AsyncAnthropic")
 async def test_anthropic_generate_response_error(
     mock_anthropic: AsyncMock,
 ) -> None:
@@ -55,7 +55,7 @@ async def test_anthropic_generate_response_error(
 
 
 @pytest.mark.asyncio
-@patch("eve.llm._anthropic.AsyncAnthropic")
+@patch("eva.llm._anthropic.AsyncAnthropic")
 async def test_anthropic_summarize_conversation(
     mock_anthropic: AsyncMock,
 ) -> None:
@@ -73,7 +73,7 @@ async def test_anthropic_summarize_conversation(
 
 
 @pytest.mark.asyncio
-@patch("eve.llm._anthropic.AsyncAnthropic")
+@patch("eva.llm._anthropic.AsyncAnthropic")
 async def test_anthropic_summarize_conversation_error(
     mock_anthropic: AsyncMock,
 ) -> None:

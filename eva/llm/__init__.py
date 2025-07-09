@@ -3,7 +3,7 @@
 
 """LLM Manager package initializer."""
 
-from eve.config import settings
+from eva.config import settings
 
 from ._anthropic import AnthropicLLMManager
 from ._base import LLMManager

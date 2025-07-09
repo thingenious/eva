@@ -1,10 +1,10 @@
 # Getting Started
 
-This guide will walk you through connecting to the EVE WebSocket Chat API and sending your first message.
+This guide will walk you through connecting to the eva WebSocket Chat API and sending your first message.
 
 ## Prerequisites
 
-- An EVE API key (contact your administrator)
+- An eva API key (contact your administrator)
 - WebSocket client capability (built into most modern languages)
 - Basic understanding of JSON and WebSocket protocols
 
@@ -21,7 +21,7 @@ ws://your-domain.com/ws
 
 ## Authentication Methods
 
-EVE supports multiple authentication methods to fit different use cases. The server attempts authentication in this priority order:
+eva supports multiple authentication methods to fit different use cases. The server attempts authentication in this priority order:
 
 1. **Authorization Header** (`Bearer <token>`)
 2. **WebSocket Subprotocol** (`chat, <your-key>`)
@@ -99,7 +99,7 @@ Choose your authentication method and connect to the WebSocket.
 const ws = new WebSocket('ws://api.example.com/ws', ['chat', 'your-api-key']);
 
 ws.onopen = function() {
-    console.log('Connected to EVE!');
+    console.log('Connected to eva!');
     // Ready to start conversation
 };
 
@@ -107,9 +107,9 @@ ws.onerror = function(error) {
     console.error('Connection error:', error);
 };
 
-ws.onclose = function(event) {
-    if (event.code === 1008) {
-        console.error('Authentication failed:', event.reason);
+ws.onclose = function(evant) {
+    if (evant.code === 1008) {
+        console.error('Authentication failed:', evant.reason);
     } else {
         console.log('Disconnected');
     }
@@ -138,8 +138,8 @@ ws.send(JSON.stringify(startMessage));
 ### Step 3: Handle Conversation Started
 
 ```javascript
-ws.onmessage = function(event) {
-    const data = JSON.parse(event.data);
+ws.onmessage = function(evant) {
+    const data = JSON.parse(evant.data);
     
     if (data.type === 'conversation_started') {
         console.log('Conversation ID:', data.conversation_id);
@@ -147,7 +147,7 @@ ws.onmessage = function(event) {
         conversationId = data.conversation_id;
         
         // Now you can send messages!
-        sendMessage('Hello, EVE! How are you today?');
+        sendMessage('Hello, eva! How are you today?');
     }
 };
 ```
@@ -167,11 +167,11 @@ function sendMessage(content) {
 
 ### Step 5: Handle Responses
 
-EVE sends responses in segments, each with emotional context:
+eva sends responses in segments, each with emotional context:
 
 ```javascript
-ws.onmessage = function(event) {
-    const data = JSON.parse(event.data);
+ws.onmessage = function(evant) {
+    const data = JSON.parse(evant.data);
     
     switch (data.type) {
         case 'conversation_started':
@@ -191,7 +191,7 @@ ws.onmessage = function(event) {
             break;
             
         case 'error':
-            console.error('EVE Error:', data.content);
+            console.error('eva Error:', data.content);
             break;
     }
 };
@@ -209,7 +209,7 @@ function displayMessage(content, emotion) {
 
 ## Understanding Emotions
 
-EVE provides emotional context with each response segment:
+eva provides emotional context with each response segment:
 
 | Emotion | Description | Example Use |
 |---------|-------------|-------------|
@@ -219,7 +219,7 @@ EVE provides emotional context with each response segment:
 | `thoughtful` | Analytical, contemplative | "Let me consider the implications..." |
 | `curious` | Questioning, exploring | "I wonder if we could also try..." |
 | `confident` | Assertive, certain | "I recommend using this method." |
-| `concerned` | Addressing problems | "However, there are some potential issues..." |
+| `concerned` | Addressing problems | "Howevar, there are some potential issues..." |
 | `empathetic` | Understanding, supportive | "I understand this can be frustrating." |
 
 ## Complete Minimal Example
@@ -228,7 +228,7 @@ Here's a complete working example:
 
 === "JavaScript"
     ```javascript
-    class SimpleEVEClient {
+    class SimpleevaClient {
         constructor(apiKey, url = 'ws://localhost:8000/ws') {
             this.apiKey = apiKey;
             this.url = url;
@@ -239,17 +239,17 @@ Here's a complete working example:
             this.ws = new WebSocket(this.url, ['chat', `${this.apiKey}`]);
             
             this.ws.onopen = () => {
-                console.log('✅ Connected to EVE');
+                console.log('✅ Connected to eva');
                 this.startConversation();
             };
             
-            this.ws.onmessage = (event) => {
-                const data = JSON.parse(event.data);
+            this.ws.onmessage = (evant) => {
+                const data = JSON.parse(evant.data);
                 this.handleMessage(data);
             };
             
-            this.ws.onclose = (event) => {
-                if (event.code === 1008) {
+            this.ws.onclose = (evant) => {
+                if (evant.code === 1008) {
                     console.error('❌ Authentication failed');
                 }
             };
@@ -289,12 +289,12 @@ Here's a complete working example:
     }
     
     // Usage
-    const client = new SimpleEVEClient('your-api-key');
+    const client = new SimpleevaClient('your-api-key');
     client.connect();
     
     // After connection is established, you can send messages
     setTimeout(() => {
-        client.sendMessage('Hello EVE! Tell me about machine learning.');
+        client.sendMessage('Hello eva! Tell me about machine learning.');
     }, 1000);
     ```
 
@@ -304,7 +304,7 @@ Here's a complete working example:
     import json
     import websockets
 
-    class SimpleEVEClient:
+    class SimpleevaClient:
         def __init__(self, api_key: str, url: str = "ws://localhost:8000/ws"):
             self.api_key = api_key
             self.url = url
@@ -314,7 +314,7 @@ Here's a complete working example:
         async def connect(self):
             headers = {"Authorization": f"Bearer {self.api_key}"}
             self.ws = await websockets.connect(self.url, extra_headers=headers)
-            print("✅ Connected to EVE")
+            print("✅ Connected to eva")
             await self.start_conversation()
         
         async def start_conversation(self):
@@ -351,11 +351,11 @@ Here's a complete working example:
     
     # Usage
     async def main():
-        client = SimpleEVEClient("your-api-key")
+        client = SimpleevaClient("your-api-key")
         await client.connect()
         
         # Send a message
-        await client.send_message("Hello EVE! Tell me about machine learning.")
+        await client.send_message("Hello eva! Tell me about machine learning.")
         
         # Listen for responses
         await client.listen()
@@ -419,11 +419,11 @@ wscat -c "ws://localhost:8000/ws?token=${API_KEY}"
 
 ## Next Steps
 
-Now that you're connected and chatting with EVE, explore:
+Now that you're connected and chatting with eva, explore:
 
 - **[API Reference](api-reference.md)** - Complete message schemas and advanced features
 - **[Client Examples](client-examples.md)** - Production-ready client implementations
-- **RAG Integration** - How EVE uses documents to enhance responses
+- **RAG Integration** - How eva uses documents to enhance responses
 - **Conversation Management** - Working with conversation history and summarization
 
 Happy chatting! 🚀

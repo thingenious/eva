@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0.
 # Copyright (c) 2024 - 2025 Thingenious.
 
-"""Test cases for PDFLoader class in the eve.rag._pdf module."""
+"""Test cases for PDFLoader class in the eva.rag._pdf module."""
 # pyright: reportPrivateUsage=false,reportArgumentType=false
 # pyright: reportUnknownArgumentType=false,reportUnknownLambdaType=false
 # pylint: disable=missing-return-doc,missing-param-doc,missing-raises-doc
@@ -15,7 +15,7 @@ from typing import Any, Iterable
 import pymupdf  # type: ignore[import-untyped]
 import pytest
 
-from eve.rag._pdf import PDFLoader, _extract_single_table, _is_valid_table_row
+from eva.rag._pdf import PDFLoader, _extract_single_table, _is_valid_table_row
 
 
 def test_pdfloader_file_not_found(tmp_path: Path) -> None:
